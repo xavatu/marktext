@@ -395,7 +395,9 @@ class Format extends Content {
             labels,
             options: this.muya.options,
         })) {
-            if (NO_NEED_TOKEN_REG.test(token.type))
+            // The backslash is the only line-break marker the cursor reveals.
+            const hasMarkerToReveal = token.type === 'hard_line_break' && token.marker === '\\';
+            if (NO_NEED_TOKEN_REG.test(token.type) && !hasMarkerToReveal)
                 continue;
 
             const { start, end } = token.range;

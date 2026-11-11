@@ -752,7 +752,7 @@ function tryHardLineBreak(state: ILexState): boolean {
     state.tokens.push({
         type: 'hard_line_break',
         raw: hardTo[0],
-        spaces: hardTo[1], // The space in hard line break
+        marker: hardTo[1],
         lineBreak: hardTo[2], // \n
         isAtEnd: hardTo.input.length === hardTo[0].length,
         parent: state.tokens,

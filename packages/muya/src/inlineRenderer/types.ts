@@ -257,7 +257,7 @@ export type SoftLineBreakToken = IBaseToken & {
 
 export type HardLineBreakToken = IBaseToken & {
     type: 'hard_line_break';
-    spaces: string; // The space in hard line break
+    marker: string; // Two or more spaces, or one backslash
     lineBreak: string; // \n
     isAtEnd: boolean;
 };

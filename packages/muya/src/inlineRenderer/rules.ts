@@ -47,7 +47,7 @@ export const commonMarkRules = {
     /^(<!--[\s\S]*?-->|(<([a-z][a-z\d-]*)[^\n<>]*>)(?:([\s\S]*?)(<\/\3 *>))?)/i, // raw html
     html_escape: new RegExp(`^(${escapeCharacters.join('|')})`, 'i'),
     soft_line_break: /^(\n)(?!\n)/,
-    hard_line_break: /^( {2,})(\n)(?!\n)/,
+    hard_line_break: /^( {2,}|\\)(\n)(?!\n)/,
 
     // patched math marker `$`
     backlash: /^(\\)([\\`*{}[\]()#+\-.!_>~:|<$])/,
