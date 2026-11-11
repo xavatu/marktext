@@ -636,9 +636,21 @@ li.mu-task-list-item > span.mu-checkbox-checked::before {
 }
 
 /* table */
+
+/* A column is at least as wide as its longest word, so a table that outgrows
+   the text column scrolls sideways instead of splitting words. The 1px
+   inline-end padding takes in the last column's border, which the cell
+   `::before` below draws 1px past the table; without it a table exactly as
+   wide as the column would show a scrollbar. */
 .mu-table {
     margin: 0.5em 0 0;
-    padding: 0.5em 0;
+    padding: 0.5em 1px 0.5em 0;
+    overflow-x: auto;
+}
+
+.mu-table::-webkit-scrollbar {
+    display: block;
+    height: 6px;
 }
 
 .mu-table-inner {
@@ -1052,7 +1064,11 @@ pre.mu-active.mu-fenced-code::after {
 
     min-width: 2em;
 
-    overflow-wrap: anywhere;
+    /* Only a token longer than the whole text column, such as a long URL,
+       reaches this cap; `overflow-wrap` from `.mu-content` breaks it there
+       instead of widening its column past the screen. Shorter words keep
+       their column at least as wide as they are. */
+    max-width: 100cqw;
 }
 
 /* Footnote definition block — port of marktext's `figure[data-role='FOOTNOTE']`
