@@ -441,10 +441,17 @@ class Content extends TreeNode {
         this.tagName = 'span';
         this.classList = ['mu-content'];
         this.attributes = {
-            contenteditable: true,
+            contenteditable: !muya.options.readOnly,
         };
         this._text = text;
         this.isComposed = false;
+    }
+
+    /** Make the leaf editable or not, following `muya.options.readOnly`. */
+    syncEditable() {
+        const editable = !this.muya.options.readOnly;
+        this.attributes.contenteditable = editable;
+        this.domNode?.setAttribute('contenteditable', String(editable));
     }
 
     getAnchor(): Nullable<Parent> {

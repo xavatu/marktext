@@ -7,12 +7,13 @@
       type="button"
       class="plain-button left-arrow"
       :aria-label="t('menu.edit.replace')"
-      :aria-expanded="type === 'replace'"
+      :aria-expanded="showReplace"
+      :disabled="isReadOnly"
       @click="toggleSearchType"
     >
       <el-icon
         :size="14"
-        :class="{ 'arrow-right': type === 'search' }"
+        :class="{ 'arrow-right': !showReplace }"
       >
         <ArrowDown />
       </el-icon>
@@ -106,7 +107,7 @@
         </div>
       </section>
       <section
-        v-if="type === 'replace'"
+        v-if="showReplace"
         class="replace"
       >
         <div class="input-wrapper replace-input">
@@ -176,6 +177,10 @@ const search = ref<HTMLInputElement | null>(null)
 
 const { currentFile } = storeToRefs(editorStore)
 const searchMatches = computed(() => currentFile.value?.searchMatches)
+// A read-only tab hides the replace row but keeps the choice for when editing
+// is turned back on.
+const isReadOnly = computed(() => !!currentFile.value?.isReadOnly)
+const showReplace = computed(() => type.value === 'replace' && !isReadOnly.value)
 
 watch(searchValue, () => {
   if (!showSearch.value) return // make sure search box is actually open

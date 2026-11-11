@@ -43,6 +43,7 @@
   "imageRelativeDirectoryName": "assets",
   "hideLinkPopup": false,
   "autoCheck": false,
+  "openFilesInReadOnlyMode": false,
 
   "preferLooseListItem": true,
   "bulletListMarker": "-",

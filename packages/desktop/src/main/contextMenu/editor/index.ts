@@ -58,6 +58,15 @@ const getContextItems = (): MenuItemConstructorOptions[] => [
   getPasteAsPlainText()
 ]
 
+// Copy actions for a selection in non-editable content, notably a read-only
+// document (#3688), which never reaches the editing menu below.
+const getCopyItems = (): MenuItemConstructorOptions[] => [
+  getCOPY(),
+  SEPARATOR,
+  getCopyAsRich(),
+  getCopyAsHtml()
+]
+
 const isInsideEditor = (params: ContextMenuParams): boolean => {
   const { isEditable, editFlags, inputFieldType } = params
   // WORKAROUND for Electron#32102: `params.spellcheckEnabled` is always false. Try to detect the editor container via other information.
@@ -132,6 +141,14 @@ export const showEditorContextMenu = (
     // (event, params) shape.
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     event
+    menu.popup({ window: win, x: params.x, y: params.y })
+  } else if (!isEditable && !params.inputFieldType && selectionText.trim().length > 0) {
+    const menu = new Menu()
+    if (isOsx) {
+      menu.append(new MenuItem(getLookUp(selectionText)))
+      menu.append(new MenuItem(SEPARATOR))
+    }
+    getCopyItems().forEach((item) => menu.append(new MenuItem(item)))
     menu.popup({ window: win, x: params.x, y: params.y })
   }
 }

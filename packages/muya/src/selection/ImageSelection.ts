@@ -35,9 +35,34 @@ class ImageSelection {
             return;
         const imageWrapper = target.closest<HTMLElement>(`.${CLASS_NAMES.MU_INLINE_IMAGE}`);
         this.selected = null;
-        if (imageWrapper)
+        if (!imageWrapper)
+            return;
+
+        if (this._muya.options.readOnly)
+            this._handleReadOnlyClickImage(event, imageWrapper);
+        else
             this._handleClickInlineImage(event, imageWrapper);
     };
+
+    // A read-only image is never selected or edited. A plain click opens it
+    // the way a modifier-click does while editing, unless the image sits in a
+    // link, which `linkMouseEvents` follows instead.
+    private _handleReadOnlyClickImage(event: Event, imageWrapper: HTMLElement) {
+        event.preventDefault();
+        const { target } = event;
+        if (!isHTMLElement(target) || target.tagName !== 'IMG' || imageWrapper.closest(LINK_SELECTOR))
+            return;
+
+        const { token } = getImageInfo(imageWrapper);
+        const src = getImageSrc(token.src || token.attrs.src || '').src || target.getAttribute('src') || '';
+        if (src) {
+            this._muya.eventCenter.emit('format-click', {
+                event,
+                formatType: 'image',
+                data: src,
+            });
+        }
+    }
 
     private _handleKeydown = (event: Event): void => {
         if (!isKeyboardEvent(event))

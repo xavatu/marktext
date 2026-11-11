@@ -122,6 +122,7 @@
       "sourceCodeMode": "Modo Código Fonte",
       "typewriterMode": "Modo Máquina de Escrever",
       "focusMode": "Modo Foco",
+      "readOnlyMode": "Modo Somente Leitura",
       "toggleTableOfContents": "Mostrar sumário",
       "reloadImages": "Recarregar Imagens",
       "showDeveloperTools": "Mostrar Ferramentas de Desenvolvedor",
@@ -213,6 +214,7 @@
       "closeOthers": "Fechar outras",
       "closeSavedTabs": "Fechar abas salvas",
       "closeAllTabs": "Fechar todas as abas",
+      "readOnly": "Somente leitura",
       "rename": "Renomear",
       "copyPath": "Copiar caminho",
       "showInFolder": "Mostrar na pasta",
@@ -565,7 +567,9 @@
         "title": "Comportamento de Escrita",
         "autoCloseBrackets": "Fechar colchetes automaticamente",
         "autoCompleteMarkdown": "Completar markdown automaticamente",
-        "autoCloseQuotes": "Fechar aspas automaticamente"
+        "autoCloseQuotes": "Fechar aspas automaticamente",
+        "openFilesInReadOnlyMode": "Abrir arquivos no modo somente leitura",
+        "openFilesInReadOnlyModeDetail": "Os arquivos abrem somente para leitura. A edição de uma aba é ativada no menu Visualizar ou no menu de contexto da aba."
       },
       "fileRepresentation": {
         "title": "Representação de Arquivo",
@@ -887,6 +891,7 @@
       "sourceCodeMode": "Modo Código Fonte",
       "typewriterMode": "Modo Máquina de Escrever",
       "focusMode": "Modo Foco",
+      "readOnlyMode": "Modo Somente Leitura",
       "toggleSourceCodeMode": "Alternar Modo Código Fonte",
       "toggleTypewriterMode": "Alternar Modo Máquina de Escrever",
       "toggleFocusMode": "Alternar Modo Foco",
@@ -1034,7 +1039,8 @@
       "title": "Verificação Ortográfica"
     },
     "tabs": {
-      "close": "Fechar {name}"
+      "close": "Fechar {name}",
+      "readOnly": "Somente leitura"
     }
   }
 }

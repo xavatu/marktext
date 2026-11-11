@@ -163,6 +163,13 @@ class TaskListCheckbox extends TreeNode {
 
             event.stopPropagation();
 
+            // The native checkbox toggles itself before this runs; cancelling
+            // the click reverts it.
+            if (muya.options.readOnly) {
+                event.preventDefault();
+                return;
+            }
+
             if (isFirefox) {
                 this._checked = !this._checked;
 

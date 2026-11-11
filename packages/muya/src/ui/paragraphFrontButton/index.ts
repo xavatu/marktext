@@ -116,7 +116,7 @@ export class ParagraphFrontButton {
         // guard — same pattern as `mouseMove` below — rather than casting
         // the wrapper to EventListener (which would hide a real mismatch).
         const mousemoveHandler = throttle((event: Event) => {
-            if (this._disableListen)
+            if (this._disableListen || this.muya.options.readOnly)
                 return;
             if (!isMouseEvent(event))
                 return;

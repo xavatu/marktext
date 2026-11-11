@@ -75,6 +75,7 @@ class Clipboard {
 
     private _listen() {
         const ownsEvent = () => this.muya.hasFocus();
+        const isReadOnly = () => this.muya.options.readOnly;
 
         const copyCutHandler = (event: Event) => {
             if (!ownsEvent() || !isClipboardEvent(event))
@@ -82,7 +83,8 @@ class Clipboard {
             event.preventDefault();
             event.stopPropagation();
 
-            const isCut = event.type === 'cut';
+            // A read-only cut still copies the selection, it just keeps the text.
+            const isCut = event.type === 'cut' && !isReadOnly();
 
             this.copyHandler(event);
 
@@ -91,7 +93,7 @@ class Clipboard {
         };
 
         const keydownHandler = (event: Event) => {
-            if (!ownsEvent() || !isKeyboardEvent(event))
+            if (!ownsEvent() || isReadOnly() || !isKeyboardEvent(event))
                 return;
             const { key, metaKey } = event;
 
@@ -131,6 +133,11 @@ class Clipboard {
             if (!ownsEvent() || !isInputEvent(event) || !event.cancelable)
                 return;
 
+            if (isReadOnly()) {
+                event.preventDefault();
+                return;
+            }
+
             const replacement = crossBlockReplacement(event.inputType, event.data);
             if (replacement == null || document.getSelection()?.isCollapsed !== false)
                 return;
@@ -146,7 +153,12 @@ class Clipboard {
         };
 
         const pasteHandler = (event: Event) => {
-            if (ownsEvent() && isClipboardEvent(event))
+            if (!ownsEvent() || !isClipboardEvent(event))
+                return;
+
+            if (isReadOnly())
+                event.preventDefault();
+            else
                 this.pasteHandler(event);
         };
 

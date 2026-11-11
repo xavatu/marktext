@@ -118,6 +118,8 @@ export const CLASS_NAMES = genUpper2LowerKeyHash([
     'MU_EMPTY',
     'MU_FENCE_CODE',
     'MU_FOCUS_MODE',
+    'MU_READ_ONLY',
+    'MU_READING',
     'MU_CODE_WRAP',
     'MU_FRONT_MATTER',
     'MU_FRONT_ICON',
@@ -318,6 +320,7 @@ export const MUYA_DEFAULT_OPTIONS = {
     fontSize: 16,
     lineHeight: 1.6,
     focusMode: false,
+    readOnly: false,
     markdown: '',
     // Whether to trim the beginning and ending empty line in code block when open markdown.
     trimUnnecessaryCodeBlockEmptyLines: false,

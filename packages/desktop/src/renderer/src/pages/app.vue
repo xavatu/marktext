@@ -194,6 +194,7 @@ onMounted(async () => {
   editorStore.LISTEN_FOR_PRINT_SERVICE_CLEARUP()
   editorStore.LISTEN_FOR_EXPORT_SUCCESS()
   editorStore.LISTEN_FOR_FILE_CHANGE()
+  editorStore.LISTEN_FOR_TOGGLE_READ_ONLY()
   editorStore.LISTEN_WINDOW_ZOOM()
   editorStore.LISTEN_FOR_RELOAD_IMAGES()
   editorStore.LISTEN_FOR_CONTEXT_MENU()

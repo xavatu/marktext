@@ -208,7 +208,7 @@ export class ScrollPage extends Parent {
 
     // Create a new paragraph if click the blank area in editor.
     private _clickHandler(event: Event) {
-        if (!isMouseEvent(event) || !isHTMLElement(event.target))
+        if (this.muya.options.readOnly || !isMouseEvent(event) || !isHTMLElement(event.target))
             return;
 
         const target = event.target;

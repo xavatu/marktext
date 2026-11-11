@@ -6,6 +6,7 @@ type Win = BrowserWindow | null | undefined
 
 const typewriterModeMenuItemId = 'typewriterModeMenuItem'
 const focusModeMenuItemId = 'focusModeMenuItem'
+const readOnlyModeMenuItemId = 'readOnlyModeMenuItem'
 
 const toggleTypeMode = (win: Win, type: string): void => {
   if (win && win.webContents) {
@@ -71,6 +72,14 @@ export const toggleTypewriterMode = (win: Win): void => {
   toggleTypeMode(win, 'typewriter')
 }
 
+// Read-only mode belongs to the active tab, not to the window like the modes
+// above, so the editor store owns the toggle.
+export const toggleReadOnlyMode = (win: Win): void => {
+  if (win && win.webContents) {
+    win.webContents.send('mt::toggle-read-only-mode')
+  }
+}
+
 export const reloadImageCache = (win: Win): void => {
   if (win && win.webContents) {
     win.webContents.send('mt::invalidate-image-cache')
@@ -83,6 +92,7 @@ export const loadViewCommands = (commandManager: CommandManager): void => {
   commandManager.add(COMMANDS.VIEW_COMMAND_PALETTE, showCommandPalette)
   commandManager.add(COMMANDS.VIEW_FOCUS_MODE, toggleFocusMode)
   commandManager.add(COMMANDS.VIEW_FORCE_RELOAD_IMAGES, reloadImageCache)
+  commandManager.add(COMMANDS.VIEW_READ_ONLY_MODE, toggleReadOnlyMode)
   commandManager.add(COMMANDS.VIEW_SOURCE_CODE_MODE, toggleSourceCodeMode)
   commandManager.add(COMMANDS.VIEW_TOGGLE_SIDEBAR, toggleSidebar)
   commandManager.add(COMMANDS.VIEW_TOGGLE_TABBAR, toggleTabBar)
@@ -94,6 +104,39 @@ export const loadViewCommands = (commandManager: CommandManager): void => {
 }
 
 // --- IPC events -------------------------------------------------------------
+
+// Edit menu entries that change the document; Cut and Paste stay enabled since
+// their native roles also serve the find bar and other inputs.
+const editingEditMenuItemIds = [
+  'pasteAsPlainTextEditMenuItem',
+  'duplicateMenuItem',
+  'createParagraphMenuItem',
+  'deleteParagraphMenuItem',
+  'replaceMenuItem',
+  'screenshot'
+]
+
+/**
+ * Enable or disable the editing commands for a read-only tab.
+ *
+ * Read-only disables the Paragraph and Format menus as well, but leaving it
+ * does not re-enable them: they depend on the source-code mode and on the
+ * caret position, which the renderer re-sends.
+ *
+ * @param applicationMenu The window's application menu.
+ * @param readOnly Whether the active tab is read-only.
+ */
+export const setReadOnlyMenuState = (applicationMenu: Menu, readOnly: boolean): void => {
+  for (const id of editingEditMenuItemIds) {
+    const menuItem = applicationMenu.getMenuItemById(id)
+    if (menuItem) menuItem.enabled = !readOnly
+  }
+  if (!readOnly) return
+
+  for (const id of ['paragraphMenuEntry', 'formatMenuItem']) {
+    applicationMenu.getMenuItemById(id)?.submenu?.items.forEach((item) => (item.enabled = false))
+  }
+}
 
 // NOTE: Don't use static `getMenuItemById` here, instead request the menu by
 //       window id from `AppMenu` manager.
@@ -137,6 +180,10 @@ export const viewLayoutChanged = (
         break
       case 'focus':
         changeMenuByName(focusModeMenuItemId, value)
+        break
+      case 'readOnly':
+        changeMenuByName(readOnlyModeMenuItemId, value)
+        setReadOnlyMenuState(applicationMenu, !!value)
         break
     }
   }

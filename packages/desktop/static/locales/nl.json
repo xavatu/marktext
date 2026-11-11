@@ -122,6 +122,7 @@
       "sourceCodeMode": "Broncodeweergave",
       "typewriterMode": "Typemachinestand",
       "focusMode": "Focusstand",
+      "readOnlyMode": "Alleen-lezenstand",
       "toggleTableOfContents": "Inhoudsopgave tonen",
       "reloadImages": "Afbeeldingen herladen",
       "showDeveloperTools": "Ontwikkelaarshulpmiddelen tonen",
@@ -213,6 +214,7 @@
       "closeOthers": "Andere sluiten",
       "closeSavedTabs": "Opgeslagen tabbladen sluiten",
       "closeAllTabs": "Alle tabbladen sluiten",
+      "readOnly": "Alleen-lezen",
       "rename": "Hernoemen",
       "copyPath": "Pad kopiëren",
       "showInFolder": "Tonen in map",
@@ -565,7 +567,9 @@
         "title": "Schrijfgedrag",
         "autoCloseBrackets": "Haakjes automatisch sluiten",
         "autoCompleteMarkdown": "Markdown automatisch aanvullen",
-        "autoCloseQuotes": "Aanhalingstekens automatisch sluiten"
+        "autoCloseQuotes": "Aanhalingstekens automatisch sluiten",
+        "openFilesInReadOnlyMode": "Bestanden openen in alleen-lezenstand",
+        "openFilesInReadOnlyModeDetail": "Bestanden worden alleen-lezen geopend. Zet bewerken voor een tabblad aan via het menu Weergave of het contextmenu van het tabblad."
       },
       "fileRepresentation": {
         "title": "Bestandsweergave",
@@ -887,6 +891,7 @@
       "sourceCodeMode": "Broncodeweergave",
       "typewriterMode": "Typemachinestand",
       "focusMode": "Focusstand",
+      "readOnlyMode": "Alleen-lezenstand",
       "toggleSourceCodeMode": "Broncodeweergave in-/uitschakelen",
       "toggleTypewriterMode": "Typemachinestand in-/uitschakelen",
       "toggleFocusMode": "Focusstand in-/uitschakelen",
@@ -1034,7 +1039,8 @@
       "title": "Spellingcontrole"
     },
     "tabs": {
-      "close": "{name} sluiten"
+      "close": "{name} sluiten",
+      "readOnly": "Alleen-lezen"
     }
   }
 }

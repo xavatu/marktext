@@ -607,6 +607,12 @@ const commands: CommandDescriptor[] = [
     }
   },
   {
+    id: 'view.read-only-mode',
+    execute: async() => {
+      focusEditorAndExecute(() => bus.emit('view:toggle-read-only-mode'))
+    }
+  },
+  {
     id: 'view.toggle-sidebar',
     execute: async() => {
       bus.emit('view:toggle-layout-entry', 'showSideBar')

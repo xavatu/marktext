@@ -66,11 +66,12 @@ class InlineRenderer {
             debug.error('Patch can only handle content block');
 
         const tokens = this._tokenizer(block, highlights);
-        const html = this.renderer.output(
-            tokens,
-            block,
-            cursor && cursor.block === block ? cursor : {},
-        );
+        // The cursor is what reveals a token's markers; a read-only document
+        // always renders as a preview.
+        const renderCursor = cursor && cursor.block === block && !this.muya.options.readOnly
+            ? cursor
+            : {};
+        const html = this.renderer.output(tokens, block, renderCursor);
         domNode!.innerHTML = html;
     }
 

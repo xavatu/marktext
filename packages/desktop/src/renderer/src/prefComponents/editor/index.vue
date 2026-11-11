@@ -105,6 +105,14 @@
           :bool="autoPairQuote"
           :on-change="(value) => onSelectChange('autoPairQuote', value)"
         />
+        <bool
+          :description="t('preferences.editor.writingBehavior.openFilesInReadOnlyMode')"
+          :detailed-description="
+            t('preferences.editor.writingBehavior.openFilesInReadOnlyModeDetail')
+          "
+          :bool="openFilesInReadOnlyMode"
+          :on-change="(value) => onSelectChange('openFilesInReadOnlyMode', value)"
+        />
       </template>
     </compound>
 
@@ -231,6 +239,7 @@ const {
   hideQuickInsertHint,
   hideLinkPopup,
   autoCheck,
+  openFilesInReadOnlyMode,
   sourceCodeLineNumbers,
   autoNormalizeLineEndings,
   wrapCodeBlocks,

@@ -518,14 +518,18 @@ ol.mu-order-list ol.mu-order-list ul.mu-bullet-list {
    `.mu-focus-mode .mu-container > *` selector precedes the higher-specificity
    `li.mu-task-list-item > … ~ *` rule below (stylelint no-descending-specificity).
    They target disjoint elements and set different properties, so order has
-   no visual effect. */
+   no visual effect.
+
+   A read-only document has no active block; `mu-reading` marks the block the
+   reader last clicked or searched to instead (`Editor#readingBlock`). */
 .mu-focus-mode .mu-container > * {
     opacity: 0.25;
 
     transition: opacity 0.2s ease-in-out;
 }
 
-.mu-focus-mode .mu-container > .mu-active {
+.mu-focus-mode .mu-container > .mu-active,
+.mu-focus-mode .mu-container > .mu-reading {
     opacity: 1;
 }
 
@@ -1151,4 +1155,16 @@ pre.mu-active.mu-fenced-code::after {
 
 .mu-container figure.mu-footnote > i.mu-footnote-backlink:hover {
     color: var(--theme-color);
+}
+
+/* Read-only mode (`Muya#setReadOnly`): a plain click follows a link, and the
+   task checkboxes no longer toggle. */
+.mu-read-only span.mu-inline-rule.mu-link,
+.mu-read-only a.mu-inline-rule,
+.mu-read-only .mu-html-preview a[href] {
+    cursor: pointer;
+}
+
+.mu-read-only .mu-task-list-checkbox {
+    cursor: default;
 }

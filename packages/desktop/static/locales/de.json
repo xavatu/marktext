@@ -122,6 +122,7 @@
       "sourceCodeMode": "Quellcode-Modus",
       "typewriterMode": "Schreibmaschinen-Modus",
       "focusMode": "Fokus-Modus",
+      "readOnlyMode": "Nur-Lesen-Modus",
       "toggleTableOfContents": "Inhaltsverzeichnis anzeigen",
       "reloadImages": "Bilder neu laden",
       "showDeveloperTools": "Entwicklertools anzeigen",
@@ -213,6 +214,7 @@
       "closeOthers": "Andere schließen",
       "closeSavedTabs": "Gespeicherte Tabs schließen",
       "closeAllTabs": "Alle Tabs schließen",
+      "readOnly": "Schreibgeschützt",
       "rename": "Umbenennen",
       "copyPath": "Pfad kopieren",
       "showInFolder": "Im Ordner anzeigen",
@@ -565,7 +567,9 @@
         "title": "Schreibverhalten",
         "autoCloseBrackets": "Klammern automatisch schließen",
         "autoCompleteMarkdown": "Markdown automatisch vervollständigen",
-        "autoCloseQuotes": "Anführungszeichen automatisch schließen"
+        "autoCloseQuotes": "Anführungszeichen automatisch schließen",
+        "openFilesInReadOnlyMode": "Dateien schreibgeschützt öffnen",
+        "openFilesInReadOnlyModeDetail": "Dateien werden nur zum Lesen geöffnet. Die Bearbeitung eines Tabs lässt sich im Menü „Ansicht“ oder im Kontextmenü des Tabs einschalten."
       },
       "fileRepresentation": {
         "title": "Dateidarstellung",
@@ -887,6 +891,7 @@
       "sourceCodeMode": "Quellcode-Modus",
       "typewriterMode": "Schreibmaschinen-Modus",
       "focusMode": "Fokus-Modus",
+      "readOnlyMode": "Nur-Lesen-Modus",
       "toggleSourceCodeMode": "Quellcode-Modus umschalten",
       "toggleTypewriterMode": "Schreibmaschinen-Modus umschalten",
       "toggleFocusMode": "Fokus-Modus umschalten",
@@ -1034,7 +1039,8 @@
       "title": "Rechtschreibprüfung"
     },
     "tabs": {
-      "close": "{name} schließen"
+      "close": "{name} schließen",
+      "readOnly": "Schreibgeschützt"
     }
   }
 }

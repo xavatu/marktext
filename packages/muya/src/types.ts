@@ -8,6 +8,12 @@ export interface IMuyaOptions {
     codeFontFamily?: string;
     wrapCodeBlocks?: boolean;
     focusMode: boolean;
+    /**
+     * Show the document for reading only. User input, paste, cut, drop and the
+     * editing UI are switched off, while selection, copy, search and links keep
+     * working. Toggle at runtime with `Muya#setReadOnly`.
+     */
+    readOnly: boolean;
     trimUnnecessaryCodeBlockEmptyLines: boolean;
     preferLooseListItem: boolean;
     autoPairBracket: boolean;

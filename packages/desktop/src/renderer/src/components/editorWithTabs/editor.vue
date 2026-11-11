@@ -1,7 +1,15 @@
 <template>
   <div
     class="editor-wrapper"
-    :class="[{ typewriter: typewriter, focus: focus, source: sourceCode, 'viewer-open': viewerOpen }]"
+    :class="[
+      {
+        typewriter: typewriter,
+        focus: focus,
+        source: sourceCode,
+        'read-only': isReadOnly,
+        'viewer-open': viewerOpen
+      }
+    ]"
     :dir="textDirection"
   >
     <div
@@ -69,7 +77,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref, shallowRef, reactive, watch, onMounted, onBeforeUnmount, nextTick, markRaw } from 'vue'
+import {
+  ref,
+  shallowRef,
+  reactive,
+  computed,
+  watch,
+  onMounted,
+  onBeforeUnmount,
+  nextTick,
+  markRaw
+} from 'vue'
 import log from 'electron-log'
 import {
   Muya,
@@ -235,6 +253,8 @@ const {
 
 // Editor store refs
 const { currentFile, tabs } = storeToRefs(editorStore)
+// Read-only belongs to the tab, so the engine follows the current one (#3688).
+const isReadOnly = computed(() => !!currentFile.value?.isReadOnly)
 
 // Project store refs
 const { projectTree } = storeToRefs(projectStore)
@@ -451,7 +471,7 @@ watch(
 )
 
 watch(typewriter, (value) => {
-  if (value) {
+  if (value && !isReadOnly.value) {
     scrollToCursor()
   }
 })
@@ -466,20 +486,42 @@ watch(focus, (value) => {
 // WYSIWYG engine, so grey them out. On return to WYSIWYG, re-apply the menu
 // state for the CURRENT cursor context (a code block/table still disables some
 // items) rather than blanket-enabling everything (#3531).
+const restoreFormatMenus = () => {
+  nextTick(() => {
+    if (selectionChange.value) {
+      pushSelectionMenuState(selectionChange.value as MuyaChange)
+    } else {
+      const windowId = window.marktext?.env?.windowId ?? -1
+      window.electron.ipcRenderer.send('mt::set-editor-format-menus-enabled', windowId, true)
+    }
+  })
+}
+
 watch(sourceCode, (isSource) => {
   const windowId = window.marktext?.env?.windowId ?? -1
   if (isSource) {
     window.electron.ipcRenderer.send('mt::set-editor-format-menus-enabled', windowId, false)
     return
   }
-  nextTick(() => {
-    if (selectionChange.value) {
-      pushSelectionMenuState(selectionChange.value as MuyaChange)
-    } else {
-      window.electron.ipcRenderer.send('mt::set-editor-format-menus-enabled', windowId, true)
-    }
-  })
+  if (!isReadOnly.value) {
+    restoreFormatMenus()
+  }
 })
+
+// Fires for a toggle and for a switch between tabs that differ. Main checks
+// the View menu item and greys out the editing commands while read-only.
+watch(
+  isReadOnly,
+  (readOnly) => {
+    editor.value?.setReadOnly(readOnly)
+    const windowId = window.marktext?.env?.windowId ?? -1
+    window.electron.ipcRenderer.send('mt::view-layout-changed', windowId, { readOnly })
+    if (!readOnly && !sourceCode.value) {
+      restoreFormatMenus()
+    }
+  },
+  { immediate: true }
+)
 
 // nextTick: the rebuilt headings have to be in the DOM before we pair them up.
 watch(
@@ -1436,7 +1478,8 @@ const handleEditParagraph = (type: unknown) => {
   // These commands act on the hidden WYSIWYG engine, so block them in
   // source-code mode (mirrors handleUndo/handleSelectAll) — otherwise e.g. the
   // Insert Table wizard opens and writes to the invisible editor (#3531).
-  if (sourceCode.value) {
+  // The wizard would open for a read-only tab as well.
+  if (sourceCode.value || isReadOnly.value) {
     return
   }
   if (type === 'table') {
@@ -1501,6 +1544,8 @@ interface FileLoadedPayload {
 const setMarkdownToEditor = (payload: unknown) => {
   const { id, markdown: newMarkdown, cursor: newCursor } = (payload ?? {}) as FileLoadedPayload
   if (editor.value) {
+    // Before the content, so its blocks are built in the right mode.
+    editor.value.setReadOnly(isReadOnly.value)
     // `setContent` resets the document and clears the undo history; only set a
     // cursor afterwards (a freshly-opened file has no history to restore).
     editor.value.setContent(newMarkdown ?? '')
@@ -1556,6 +1601,10 @@ const handleFileChange = (payload: unknown) => {
   if (!editor.value) return
   const container = getScrollContainer()
   if (!container) return
+
+  // `currentFile` is already the incoming tab; set its mode before the content
+  // so the blocks are built in that mode.
+  editor.value.setReadOnly(isReadOnly.value)
 
   if (typeof newMarkdown === 'string') {
     // Returning from source-code mode: the WYSIWYG engine is never unmounted
@@ -1776,6 +1825,7 @@ onMounted(() => {
 
   const options: Partial<IMuyaOptions> = {
     focusMode: focus.value,
+    readOnly: isReadOnly.value,
     markdown: props.markdown,
     locale: getMuyaLocale(language.value),
     preferLooseListItem: preferLooseListItem.value,
@@ -1963,13 +2013,15 @@ onMounted(() => {
   editor.value.on(
     'format-click',
     ({ event, formatType, data }: { event: MouseEvent; formatType: string; data: unknown }) => {
-      const ctrlOrMeta = (isMac && event.metaKey) || (!isMac && event.ctrlKey)
-      if (formatType === 'link' && ctrlOrMeta) {
+      // A read-only document follows a plain click too (#3688).
+      const opensTarget =
+        (isMac && event.metaKey) || (!isMac && event.ctrlKey) || isReadOnly.value
+      if (formatType === 'link' && opensTarget) {
         editorStore.FORMAT_LINK_CLICK({
           data: data as { href: string; [key: string]: unknown },
           dirname: window.DIRNAME
         })
-      } else if (formatType === 'image' && ctrlOrMeta) {
+      } else if (formatType === 'image' && opensTarget) {
         mediaViewer.value?.openImage(data as string)
       }
     }
@@ -2004,7 +2056,9 @@ onMounted(() => {
 
   editor.value.on('selection-change', (changes: MuyaChange) => {
     const y = (changes.cursorCoords?.y ?? null) as number | null
-    if (y != null) {
+    // The scrolling below keeps a caret in view. A read-only document has
+    // none; there the selection only marks what the reader clicked or dragged.
+    if (y != null && !isReadOnly.value) {
       // Before the scrolling below: a 0-duration `animatedScrollTo` assigns
       // `scrollTop` at once, moving the headings out from under `y`.
       updateActiveHeading(y)

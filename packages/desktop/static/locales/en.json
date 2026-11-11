@@ -122,6 +122,7 @@
       "sourceCodeMode": "Source Code Mode",
       "typewriterMode": "Typewriter Mode",
       "focusMode": "Focus Mode",
+      "readOnlyMode": "Read-Only Mode",
       "toggleTableOfContents": "Show Table of Contents",
       "reloadImages": "Reload Images",
       "showDeveloperTools": "Show Developer Tools",
@@ -213,6 +214,7 @@
       "closeOthers": "Close others",
       "closeSavedTabs": "Close saved tabs",
       "closeAllTabs": "Close all tabs",
+      "readOnly": "Read-only",
       "rename": "Rename",
       "copyPath": "Copy path",
       "showInFolder": "Show in folder",
@@ -565,7 +567,9 @@
         "title": "Writing Behavior",
         "autoCloseBrackets": "Auto close brackets",
         "autoCompleteMarkdown": "Auto complete markdown",
-        "autoCloseQuotes": "Auto close quotes"
+        "autoCloseQuotes": "Auto close quotes",
+        "openFilesInReadOnlyMode": "Open files in read-only mode",
+        "openFilesInReadOnlyModeDetail": "Files open for reading only. Turn editing on for a tab in the View menu or in the tab's context menu."
       },
       "fileRepresentation": {
         "title": "File Representation",
@@ -887,6 +891,7 @@
       "sourceCodeMode": "Source Code Mode",
       "typewriterMode": "Typewriter Mode",
       "focusMode": "Focus Mode",
+      "readOnlyMode": "Read-Only Mode",
       "toggleSourceCodeMode": "Toggle Source Code Mode",
       "toggleTypewriterMode": "Toggle Typewriter Mode",
       "toggleFocusMode": "Toggle Focus Mode",
@@ -1034,7 +1039,8 @@
       "title": "Spellcheck"
     },
     "tabs": {
-      "close": "Close {name}"
+      "close": "Close {name}",
+      "readOnly": "Read-only"
     }
   }
 }

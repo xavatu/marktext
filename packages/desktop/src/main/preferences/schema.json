@@ -221,6 +221,11 @@
     "type": "boolean",
     "default": false
   },
+  "openFilesInReadOnlyMode": {
+    "description": "Editor--Open files in read-only mode. Editing can be turned back on per tab.",
+    "type": "boolean",
+    "default": false
+  },
   "autoNormalizeLineEndings": {
     "description": "Editor--Automatically normalize line endings when opening files. When disabled, files are opened as-is.",
     "type": "boolean",

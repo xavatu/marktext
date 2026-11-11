@@ -7,7 +7,8 @@ import {
   getRENAME,
   getCopyPath,
   getShowInFolder,
-  getShowInSideBar
+  getShowInSideBar,
+  getReadOnly
 } from './menuItems'
 import { popupContextMenu } from '../popupMenu'
 
@@ -35,6 +36,7 @@ interface ContextMenuClickEvent {
 interface TabLike {
   id: string
   pathname?: string | null
+  isReadOnly?: boolean
 }
 
 export const showContextMenu = (event: ContextMenuClickEvent, tab: TabLike): void => {
@@ -47,6 +49,7 @@ export const showContextMenu = (event: ContextMenuClickEvent, tab: TabLike): voi
   const copyPath = getCopyPath()
   const showInFolder = getShowInFolder()
   const showInSideBar = getShowInSideBar()
+  const readOnly = getReadOnly(!!tab.isReadOnly)
 
   ;([rename, copyPath, showInFolder, showInSideBar] as MenuItemShape[]).forEach((item) => {
     item.enabled = !!pathname
@@ -57,6 +60,8 @@ export const showContextMenu = (event: ContextMenuClickEvent, tab: TabLike): voi
     closeOthers,
     closeSaved,
     closeAll,
+    SEPARATOR,
+    readOnly,
     SEPARATOR,
     rename,
     copyPath,

@@ -122,6 +122,7 @@
       "sourceCodeMode": "Kaynak Kod Modu",
       "typewriterMode": "Daktilo Modu",
       "focusMode": "Odak Modu",
+      "readOnlyMode": "Salt Okunur Mod",
       "toggleTableOfContents": "İçindekileri göster",
       "reloadImages": "Görselleri Yeniden Yükle",
       "showDeveloperTools": "Geliştirici Araçlarını Göster",
@@ -213,6 +214,7 @@
       "closeOthers": "Diğerlerini kapat",
       "closeSavedTabs": "Kaydedilmiş sekmeleri kapat",
       "closeAllTabs": "Tüm sekmeleri kapat",
+      "readOnly": "Salt okunur",
       "rename": "Yeniden Adlandır",
       "copyPath": "Yolu kopyala",
       "showInFolder": "Klasörde göster",
@@ -565,7 +567,9 @@
         "title": "Yazma Davranışı",
         "autoCloseBrackets": "Parantezleri otomatik kapat",
         "autoCompleteMarkdown": "Markdown'u otomatik tamamla",
-        "autoCloseQuotes": "Tırnakları otomatik kapat"
+        "autoCloseQuotes": "Tırnakları otomatik kapat",
+        "openFilesInReadOnlyMode": "Dosyaları salt okunur modda aç",
+        "openFilesInReadOnlyModeDetail": "Dosyalar yalnızca okumak için açılır. Bir sekmede düzenlemeyi Görünüm menüsünden veya sekmenin bağlam menüsünden açabilirsiniz."
       },
       "fileRepresentation": {
         "title": "Dosya Gösterimi",
@@ -887,6 +891,7 @@
       "sourceCodeMode": "Kaynak Kod Modu",
       "typewriterMode": "Daktilo Modu",
       "focusMode": "Odak Modu",
+      "readOnlyMode": "Salt Okunur Mod",
       "toggleSourceCodeMode": "Kaynak Kod Modunu Aç/Kapat",
       "toggleTypewriterMode": "Daktilo Modunu Aç/Kapat",
       "toggleFocusMode": "Odak Modunu Aç/Kapat",
@@ -1034,7 +1039,8 @@
       "title": "Yazım Denetimi"
     },
     "tabs": {
-      "close": "Kapat: {name}"
+      "close": "Kapat: {name}",
+      "readOnly": "Salt okunur"
     }
   }
 }

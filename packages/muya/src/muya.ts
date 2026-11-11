@@ -248,10 +248,14 @@ export class Muya {
     }
 
     undo() {
+        if (this.options.readOnly)
+            return;
         this.editor.history.undo();
     }
 
     redo() {
+        if (this.options.readOnly)
+            return;
         this.editor.history.redo();
     }
 
@@ -303,6 +307,8 @@ export class Muya {
     }
 
     replace(replaceValue: string, opt: IReplaceOption = { isSingle: true, isRegexp: false }) {
+        if (this.options.readOnly)
+            return this.editor.searchModule;
         return this.editor.searchModule.replace(replaceValue, opt);
     }
 
@@ -356,6 +362,9 @@ export class Muya {
     }
 
     setOptions(options: Partial<IMuyaOptions>, forceRender = false) {
+        if (options.readOnly !== undefined)
+            this.setReadOnly(options.readOnly);
+
         Object.assign(this.options, options);
 
         if ('spellcheckEnabled' in options)
@@ -420,11 +429,59 @@ export class Muya {
         this.options.focusMode = focusMode;
     }
 
+    /**
+     * Switch the editor between editing and reading.
+     *
+     * While read-only, the document changes only through `setContent` and
+     * `replaceContent`. Typing, IME, paste, cut, drop and task checkboxes are
+     * ignored, the editing commands (`format`, the paragraph and table
+     * commands, `insertImage`, `replace`, `undo`/`redo`, …) are no-ops, and no
+     * floating tool opens. No block reveals its markdown source, so a click
+     * never exposes `**` or HTML tags. Selection, copy, search, heading folding
+     * and links stay available; a plain click on a link or an image emits
+     * `format-click` as a modifier-click does while editing.
+     *
+     * Entering read-only mode hides the caret and closes every floating tool.
+     * Clicks and search still move the hidden caret, and focus mode keeps its
+     * top-level block lit (`editor.readingBlock`). Leaving read-only mode
+     * while the editor has focus shows the caret again, as `focus()` does.
+     */
+    setReadOnly(readOnly: boolean) {
+        if (this.options.readOnly === readOnly)
+            return;
+
+        if (readOnly) {
+            this.editor.readingBlock = this.editor.activeContentBlock?.outMostBlock ?? null;
+            // Blurring the caret block re-renders it without its markers.
+            this.editor.activeContentBlock = null;
+            this.editor.selection.clearImage();
+            this.ui.hideAllFloatTools();
+            // The image resize bar is not a float and hides on this event.
+            this.eventCenter.emit('muya-transformer', { reference: null });
+        }
+        else {
+            this.editor.readingBlock = null;
+        }
+
+        this.options.readOnly = readOnly;
+        applyReadOnly(this.domNode, readOnly);
+        this.editor.scrollPage?.breadthFirstTraverse((node) => {
+            if (node.isContent())
+                node.syncEditable();
+        });
+
+        // Without a caret in a block, the next keystroke would be dropped.
+        if (!readOnly && this.hasFocus())
+            this.editor.focus();
+    }
+
     selectAll() {
         this.editor.selection.selectAll();
     }
 
     format(type: string) {
+        if (this.options.readOnly)
+            return;
         const { selection } = this.editor;
 
         // Cross-leaf selection: apply to each formattable leaf in range. The
@@ -586,6 +643,8 @@ export class Muya {
      * @returns True when the replacement was applied.
      */
     replaceCurrentWordInlineUnsafe(word: string, replacement: string): boolean {
+        if (this.options.readOnly)
+            return false;
         const block = this.editor.activeContentBlock;
         if (!block)
             return false;
@@ -685,6 +744,8 @@ export class Muya {
      * Paste the clipboard content as plain text at the current cursor.
      */
     pasteAsPlainText(): Promise<void> {
+        if (this.options.readOnly)
+            return Promise.resolve();
         return this.editor.clipboard.pasteAsPlainText();
     }
 
@@ -695,6 +756,8 @@ export class Muya {
      * no longer rely on the removed `document.execCommand('paste')`.
      */
     pasteImage(src: string): Promise<void> {
+        if (this.options.readOnly)
+            return Promise.resolve();
         return this.editor.clipboard.pasteImage(src);
     }
 
@@ -928,6 +991,8 @@ export class Muya {
      * copy. No-op when there is no current block.
      */
     duplicate() {
+        if (this.options.readOnly)
+            return;
         const block = this._outmostBlockAtCursor();
         if (!block)
             return;
@@ -949,6 +1014,8 @@ export class Muya {
      *   context-menu "Insert Paragraph Before/After" behaviour.
      */
     insertParagraph(location: 'before' | 'after' = 'after', text = '', outMost = false) {
+        if (this.options.readOnly)
+            return;
         const block = outMost
             ? this._outmostBlockAtCursor()
             : this._immediateBlockAtCursor();
@@ -971,6 +1038,8 @@ export class Muya {
      * block, or to a fresh empty paragraph when it was the only block.
      */
     deleteParagraph() {
+        if (this.options.readOnly)
+            return;
         const block = this._outmostBlockAtCursor();
         if (!block)
             return;
@@ -1004,7 +1073,7 @@ export class Muya {
         { rows, columns }: { rows: number; columns: number },
         { replace = false, block = this._immediateBlockAtCursor() }: { replace?: boolean; block?: Parent | null } = {},
     ) {
-        if (!block?.outMostBlock)
+        if (this.options.readOnly || !block?.outMostBlock)
             return;
 
         const safeRows = Math.max(2, Number.isFinite(rows) ? Math.floor(rows) : 0);
@@ -1046,6 +1115,8 @@ export class Muya {
      * or with no cursor.
      */
     insertImage({ src = '', alt = '' }: { src?: string; alt?: string }) {
+        if (this.options.readOnly)
+            return;
         const block = this.editor.activeContentBlock ?? this.editor.selection.anchorBlock;
         if (!(block instanceof Format))
             return;
@@ -1268,6 +1339,8 @@ export class Muya {
      * `loose-list-item`, `reset-to-paragraph`, and the diagram types.
      */
     updateParagraph(type: string) {
+        if (this.options.readOnly)
+            return;
         const block = this._outmostBlockAtCursor();
         if (!block)
             return;
@@ -1496,7 +1569,7 @@ export class Muya {
      * block).
      */
     resetToParagraph(block: Parent) {
-        if (block.blockName === 'table')
+        if (this.options.readOnly || block.blockName === 'table')
             return;
 
         if (isAnyListState(block.getState()) || block.blockName === 'block-quote') {
@@ -1778,6 +1851,13 @@ function applyAppearance(domNode: HTMLElement, options: Partial<IMuyaOptions>) {
         domNode.classList.toggle(CLASS_NAMES.MU_CODE_WRAP, !!options.wrapCodeBlocks);
 }
 
+// The content leaves are editing hosts of their own, so the root attribute
+// alone does not stop editing; `Content#syncEditable` covers them.
+function applyReadOnly(domNode: HTMLElement, readOnly: boolean) {
+    domNode.setAttribute('contenteditable', readOnly ? 'false' : 'true');
+    domNode.classList.toggle(CLASS_NAMES.MU_READ_ONLY, readOnly);
+}
+
 /**
  * [ensureContainerDiv ensure container element is div]
  */
@@ -1803,7 +1883,11 @@ function getContainer(originContainer: HTMLElement, options: IMuyaOptions) {
 
     newContainer.classList.add(CLASS_NAMES.MU_EDITOR);
 
-    newContainer.setAttribute('contenteditable', 'true');
+    applyReadOnly(newContainer, !!options.readOnly);
+    // A read-only root is not an editing host, so it needs a tab index to take
+    // focus on click; copy and keyboard scrolling depend on that focus.
+    if (!newContainer.hasAttribute('tabindex'))
+        newContainer.setAttribute('tabindex', '0');
     newContainer.setAttribute('autocorrect', 'false');
     newContainer.setAttribute('autocomplete', 'off');
     newContainer.setAttribute('spellcheck', spellcheckEnabled ? 'true' : 'false');

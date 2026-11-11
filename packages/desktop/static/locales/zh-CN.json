@@ -122,6 +122,7 @@
       "sourceCodeMode": "源码模式",
       "typewriterMode": "打字机模式",
       "focusMode": "专注模式",
+      "readOnlyMode": "只读模式",
       "toggleTableOfContents": "显示目录",
       "reloadImages": "重新加载图片",
       "showDeveloperTools": "显示开发者工具",
@@ -213,6 +214,7 @@
       "closeOthers": "关闭其他",
       "closeSavedTabs": "关闭已保存的标签页",
       "closeAllTabs": "关闭所有标签页",
+      "readOnly": "只读",
       "rename": "重命名",
       "copyPath": "复制路径",
       "showInFolder": "在文件夹中显示",
@@ -565,7 +567,9 @@
         "title": "写作行为",
         "autoCloseBrackets": "自动关闭括号",
         "autoCompleteMarkdown": "自动完成 Markdown",
-        "autoCloseQuotes": "自动关闭引号"
+        "autoCloseQuotes": "自动关闭引号",
+        "openFilesInReadOnlyMode": "以只读模式打开文件",
+        "openFilesInReadOnlyModeDetail": "文件以只读方式打开。可在“视图”菜单或标签页的右键菜单中为标签页开启编辑。"
       },
       "fileRepresentation": {
         "title": "文件表示",
@@ -887,6 +891,7 @@
       "sourceCodeMode": "源码模式",
       "typewriterMode": "打字机模式",
       "focusMode": "专注模式",
+      "readOnlyMode": "只读模式",
       "toggleSourceCodeMode": "切换源码模式",
       "toggleTypewriterMode": "切换打字机模式",
       "toggleFocusMode": "切换专注模式",
@@ -1034,7 +1039,8 @@
       "switchError": "{languageCode} 拼写检查切换错误，{error}"
     },
     "tabs": {
-      "close": "关闭 {name}"
+      "close": "关闭 {name}",
+      "readOnly": "只读"
     }
   }
 }

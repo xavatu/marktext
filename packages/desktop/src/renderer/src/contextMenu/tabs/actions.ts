@@ -28,6 +28,10 @@ export const showInFolder = (tabId: string): void => {
   bus.emit('TABS::show-in-folder', tabId)
 }
 
+export const toggleReadOnly = (tabId: string): void => {
+  bus.emit('TABS::toggle-read-only', tabId)
+}
+
 export const showInSideBar = (pathname?: string | null): void => {
   if (!pathname) return
   bus.emit('SIDEBAR::reveal-file', pathname)

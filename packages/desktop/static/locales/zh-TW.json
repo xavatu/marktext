@@ -122,6 +122,7 @@
       "sourceCodeMode": "原始碼模式",
       "typewriterMode": "打字機模式",
       "focusMode": "專注模式",
+      "readOnlyMode": "唯讀模式",
       "toggleTableOfContents": "顯示目錄",
       "reloadImages": "重新載入圖片",
       "showDeveloperTools": "顯示開發者工具",
@@ -213,6 +214,7 @@
       "closeOthers": "關閉其他",
       "closeSavedTabs": "關閉已儲存的標籤頁",
       "closeAllTabs": "關閉所有標籤頁",
+      "readOnly": "唯讀",
       "rename": "重新命名",
       "copyPath": "複製路徑",
       "showInFolder": "在資料夾中顯示",
@@ -565,7 +567,9 @@
         "title": "寫作行為",
         "autoCloseBrackets": "自動關閉括號",
         "autoCompleteMarkdown": "自動完成 Markdown",
-        "autoCloseQuotes": "自動關閉引號"
+        "autoCloseQuotes": "自動關閉引號",
+        "openFilesInReadOnlyMode": "以唯讀模式開啟檔案",
+        "openFilesInReadOnlyModeDetail": "檔案以唯讀方式開啟。可在「檢視」選單或標籤頁的右鍵選單中為標籤頁開啟編輯。"
       },
       "fileRepresentation": {
         "title": "檔案表示",
@@ -887,6 +891,7 @@
       "sourceCodeMode": "原始碼模式",
       "typewriterMode": "打字機模式",
       "focusMode": "專注模式",
+      "readOnlyMode": "唯讀模式",
       "toggleSourceCodeMode": "切換原始碼模式",
       "toggleTypewriterMode": "切換打字機模式",
       "toggleFocusMode": "切換專注模式",
@@ -1034,7 +1039,8 @@
       "title": "拼字檢查"
     },
     "tabs": {
-      "close": "關閉 {name}"
+      "close": "關閉 {name}",
+      "readOnly": "唯讀"
     }
   }
 }

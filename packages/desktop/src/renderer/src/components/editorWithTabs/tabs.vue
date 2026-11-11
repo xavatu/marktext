@@ -12,12 +12,25 @@
           v-for="file of tabs"
           :key="file.id"
           :title="file.pathname"
-          :class="{ active: currentFile?.id === file.id, unsaved: !file.isSaved }"
+          :class="{
+            active: currentFile?.id === file.id,
+            unsaved: !file.isSaved,
+            'read-only': file.isReadOnly
+          }"
           :data-id="file.id"
           @click.stop="selectFile(file)"
           @click.middle="closeTab(file.id)"
           @contextmenu.prevent="handleContextMenu($event, file)"
         >
+          <el-icon
+            v-if="file.isReadOnly"
+            class="read-only-icon"
+            :size="12"
+            role="img"
+            :aria-label="t('editor.tabs.readOnly')"
+          >
+            <Lock />
+          </el-icon>
           <span>{{ file.filename }}</span>
           <span class="unsaved-dot" />
           <button
@@ -54,7 +67,7 @@ import { useEditorStore } from '@/store/editor'
 import { storeToRefs } from 'pinia'
 import autoScroll from 'dom-autoscroller'
 import dragula from 'dragula'
-import { Plus, Close } from '@element-plus/icons-vue'
+import { Plus, Close, Lock } from '@element-plus/icons-vue'
 import { useI18n } from 'vue-i18n'
 import IconTooltip from '@/components/iconTooltip/index.vue'
 import { showContextMenu } from '../../contextMenu/tabs'
@@ -179,6 +192,13 @@ const showInFolder = (tabId: unknown) => {
   }
 }
 
+const toggleReadOnly = (tabId: unknown) => {
+  const tab = tabs.value.find((f) => f.id === tabId)
+  if (tab) {
+    editorStore.SET_READ_ONLY(tab)
+  }
+}
+
 const handleContextMenu = (event: MouseEvent, tab: IFileState) => {
   if (tab.id) {
     showContextMenu(event, tab)
@@ -200,6 +220,7 @@ onMounted(() => {
   bus.on('TABS::rename', rename)
   bus.on('TABS::copy-path', copyPath)
   bus.on('TABS::show-in-folder', showInFolder)
+  bus.on('TABS::toggle-read-only', toggleReadOnly)
 
   const tabsEl = tabContainer.value
   if (!tabsEl || !tabDropContainer.value) return
@@ -271,6 +292,7 @@ onBeforeUnmount(() => {
   bus.off('TABS::rename', rename)
   bus.off('TABS::copy-path', copyPath)
   bus.off('TABS::show-in-folder', showInFolder)
+  bus.off('TABS::toggle-read-only', toggleReadOnly)
 })
 </script>
 
@@ -354,6 +376,10 @@ onBeforeUnmount(() => {
       text-overflow: ellipsis;
       white-space: nowrap;
       margin-right: 3px;
+    }
+    & > .read-only-icon {
+      flex-shrink: 0;
+      margin-right: 4px;
     }
     & > .unsaved-dot {
       display: none;

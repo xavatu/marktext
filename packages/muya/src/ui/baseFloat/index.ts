@@ -150,6 +150,10 @@ abstract class BaseFloat {
     // tableChessboard → `(row, column)`). `never[]` in the contravariant
     // arg position accepts any concrete callback shape.
     show(reference: ReferenceElement, cb: (...args: never[]) => void = noop) {
+        // Every float edits the document or serves editing.
+        if (this.muya.options?.readOnly)
+            return;
+
         const { floatBox } = this;
         const { eventCenter } = this.muya;
         const { placement, offsetOptions } = this.options;

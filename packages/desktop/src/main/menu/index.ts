@@ -8,7 +8,7 @@ import { updateSidebarMenu } from '../menu/actions/edit'
 import { updateFormatMenu } from '../menu/actions/format'
 import { updateSelectionMenus, type SelectionState } from '../menu/actions/paragraph'
 import { onInternalChannel } from '../utils/internalIpc'
-import { viewLayoutChanged } from '../menu/actions/view'
+import { setReadOnlyMenuState, viewLayoutChanged } from '../menu/actions/view'
 import configureMenu, { configSettingMenu } from '../menu/templates'
 import { setLanguage } from '../i18n.js'
 import type Preference from '../preferences'
@@ -306,6 +306,8 @@ class AppMenu {
       updateMenuItem(oldMenu, newMenu, 'sourceCodeModeMenuItem')
       updateMenuItem(oldMenu, newMenu, 'typewriterModeMenuItem')
       updateMenuItem(oldMenu, newMenu, 'focusModeMenuItem')
+      updateMenuItem(oldMenu, newMenu, 'readOnlyModeMenuItem')
+      reapplyReadOnlyMenuState(newMenu)
       updateMenuItem(oldMenu, newMenu, 'sideBarMenuItem')
       updateMenuItem(oldMenu, newMenu, 'tabBarMenuItem')
 
@@ -335,6 +337,8 @@ class AppMenu {
         updateMenuItem(oldMenu, rebuilt, 'sourceCodeModeMenuItem')
         updateMenuItem(oldMenu, rebuilt, 'typewriterModeMenuItem')
         updateMenuItem(oldMenu, rebuilt, 'focusModeMenuItem')
+        updateMenuItem(oldMenu, rebuilt, 'readOnlyModeMenuItem')
+        reapplyReadOnlyMenuState(rebuilt)
         updateMenuItem(oldMenu, rebuilt, 'sideBarMenuItem')
         updateMenuItem(oldMenu, rebuilt, 'tabBarMenuItem')
         newMenu = rebuilt
@@ -596,6 +600,14 @@ const updateMenuItem = (oldMenus: Menu, newMenus: Menu, id: string): void => {
   const newItem = newMenus.getMenuItemById(id)
   if (oldItem && newItem) {
     newItem.checked = oldItem.checked
+  }
+}
+
+// A rebuilt menu starts with every item enabled; call after the read-only
+// checkbox has been carried over.
+const reapplyReadOnlyMenuState = (menu: Menu): void => {
+  if (menu.getMenuItemById('readOnlyModeMenuItem')?.checked) {
+    setReadOnlyMenuState(menu, true)
   }
 }
 

@@ -65,6 +65,15 @@ watch(
   }
 )
 
+// The source view of a read-only tab is read-only too (#3688). The current tab
+// is the one shown, on a tab switch as well as on a toggle.
+watch(
+  () => !!currentTab.value?.isReadOnly,
+  (readOnly) => {
+    editor.value?.setOption('readOnly', readOnly)
+  }
+)
+
 watch(sourceCodeLineNumbers, (value) => {
   editor.value?.setOption('lineNumbers', value)
 })
@@ -223,7 +232,8 @@ const handleSelectAll = () => {
 }
 
 const handleUndo = () => {
-  if (!sourceCode.value) {
+  // `execCommand` bypasses CodeMirror's `readOnly` option.
+  if (!sourceCode.value || currentTab.value?.isReadOnly) {
     return
   }
 
@@ -233,7 +243,7 @@ const handleUndo = () => {
 }
 
 const handleRedo = () => {
-  if (!sourceCode.value) {
+  if (!sourceCode.value || currentTab.value?.isReadOnly) {
     return
   }
 
@@ -411,7 +421,8 @@ onMounted(() => {
     lineWrapping: true,
     styleActiveLine: true,
     direction: textDirection,
-    viewportMargin: Infinity
+    viewportMargin: Infinity,
+    readOnly: !!currentTab.value.isReadOnly
   }
 
   if (railscastsThemes.includes(theme.value)) {

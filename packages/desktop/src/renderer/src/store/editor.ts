@@ -560,6 +560,9 @@ export const useEditorStore = defineStore('editor', {
 
     FILE_SAVE(): void {
       if (!this.currentFile) return
+      // A clean read-only tab holds no edits; saving it would only write the
+      // engine's normalised copy over the file. Save As still works.
+      if (this.currentFile.isReadOnly && this.currentFile.isSaved) return
       this.flushActiveEditor()
       const projectStore = useProjectStore()
       const { id, filename, pathname, markdown } = this.currentFile
@@ -1415,6 +1418,10 @@ export const useEditorStore = defineStore('editor', {
           options as Record<string, unknown>
         )
       )
+      // A buffer whose file does not exist yet is there to be written.
+      if (docState.pathname && !docState.isPendingCreation) {
+        docState.isReadOnly = usePreferencesStore().openFilesInReadOnlyMode
+      }
       const { id, cursor } = docState
 
       if (selected) {
@@ -1570,6 +1577,14 @@ export const useEditorStore = defineStore('editor', {
           tab.lastSavedHistoryId !== tab.history.lastInitIndex) // Edge Case: Undo to original content (lastEditIndex === -1) after saving means we cant use the lastEditIndex. Compare it against the lastInitIndex instead.
       const isDirty = history === undefined ? markdown !== oldMarkdown : historyMarksDirty
       if (isDirty) {
+        // The user cannot edit a read-only tab, so this change came from the
+        // engine (e.g. normalising the document on load, #5043): neither flag
+        // the file as modified nor auto-save it. A tab that was dirty before it
+        // turned read-only stays dirty.
+        if (tab.isReadOnly) {
+          debouncedSendBufferedState()
+          return
+        }
         tab.isSaved = false
         if (pathname && autoSave) {
           const options = getOptionsFromState(tab)
@@ -1633,6 +1648,10 @@ export const useEditorStore = defineStore('editor', {
           value
         }
       }
+
+      // The selection would re-enable the Paragraph and Format menus, which a
+      // read-only tab keeps disabled.
+      if (this.currentFile?.isReadOnly) return
 
       const { windowId } = window.marktext?.env ?? { windowId: -1 }
       window.electron.ipcRenderer.send(
@@ -1780,6 +1799,40 @@ export const useEditorStore = defineStore('editor', {
       })
     },
 
+    /**
+     * Switch a tab between reading and editing (#3688).
+     *
+     * Turning read-only on keeps any unsaved edits: the tab stays dirty until it
+     * is saved or closed. The editor and the application menu follow the
+     * current tab's flag on their own.
+     *
+     * @param tab The tab to change; defaults to the current tab.
+     * @param readOnly The new state; defaults to the opposite of the current one.
+     */
+    SET_READ_ONLY(tab?: IFileState | null, readOnly?: boolean): void {
+      tab ??= this.currentFile
+      if (!tab) return
+      const value = readOnly ?? !tab.isReadOnly
+      if (!!tab.isReadOnly === value) return
+
+      if (value && tab.id === this.currentFile?.id) {
+        // Commit a keystroke still queued in the engine while it counts as
+        // an edit.
+        this.flushActiveEditor()
+      }
+      tab.isReadOnly = value
+      debouncedSendBufferedState()
+    },
+
+    LISTEN_FOR_TOGGLE_READ_ONLY(): void {
+      window.electron.ipcRenderer.on('mt::toggle-read-only-mode', () => {
+        this.SET_READ_ONLY()
+      })
+      bus.on('view:toggle-read-only-mode', () => {
+        this.SET_READ_ONLY()
+      })
+    },
+
     LISTEN_FOR_FILE_CHANGE(): void {
       window.electron.ipcRenderer.on('mt::update-file', (_, payload) => {
         const { type, change } = payload
@@ -1790,7 +1843,12 @@ export const useEditorStore = defineStore('editor', {
           const { id, isSaved, filename } = tab
           switch (type) {
             case 'unlink': {
-              tab.isSaved = false
+              // Closing a read-only tab must not ask to save it. Tools that
+              // save by replacing the file also remove it first, and the
+              // reload after that must stay silent.
+              if (!tab.isReadOnly) {
+                tab.isSaved = false
+              }
               this.pushTabNotification({
                 tabId: id,
                 msg: t('store.editor.fileRemovedOnDisk', { name: filename }),
@@ -1822,6 +1880,10 @@ export const useEditorStore = defineStore('editor', {
                   autoSaveTimers.delete(id)
                 }
 
+                // The file is back, so a "removed on disk" warning is stale.
+                tab.notifications = tab.notifications.filter(
+                  (n) => n.exclusiveType !== 'file_changed'
+                )
                 this.loadChange(change as unknown as FileChangePayload)
                 return
               }
@@ -2156,6 +2218,7 @@ interface BufferedTabState {
   wordCount: IFileState['wordCount']
   muyaIndexCursor: unknown
   scrollTop: number
+  isReadOnly?: boolean
 }
 
 const createBufferedTabState = (tab: Partial<IFileState> & { id: string }): BufferedTabState => {
@@ -2176,7 +2239,8 @@ const createBufferedTabState = (tab: Partial<IFileState> & { id: string }): Buff
     cursor: toSerializableValue(tab.cursor, defaultFileState.cursor),
     wordCount: toSerializableValue(tab.wordCount, defaultFileState.wordCount),
     muyaIndexCursor: toSerializableValue(tab.muyaIndexCursor, defaultFileState.muyaIndexCursor),
-    scrollTop: tab.scrollTop ?? defaultFileState.scrollTop
+    scrollTop: tab.scrollTop ?? defaultFileState.scrollTop,
+    isReadOnly: tab.isReadOnly
   }
 }
 

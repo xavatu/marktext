@@ -91,6 +91,10 @@ export interface IFileState {
   // Muya block tree; only populated for the actively edited tab.
   blocks?: unknown
   isMixedLineEndings?: boolean
+  // The tab is shown for reading only (#3688). Content changes while it is set
+  // come from the engine or from disk, never from the user, so they neither
+  // mark the tab unsaved nor get written back. Unset means editable.
+  isReadOnly?: boolean
 }
 
 /**

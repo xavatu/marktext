@@ -100,6 +100,12 @@ The focus mode will help you to focus on the currently line only by fading out o
 
 In typewriter mode, the cursor is always keep in the middle of the editor.
 
+#### Read-only mode
+
+Read-only mode shows a tab for reading: typing, pasting and dropping do nothing, and clicking text never reveals its markdown source. You can still select and copy text, search, fold headings and follow a link with a plain click. Focus mode fades out everything except the block you last clicked or reached with search, and when you turn editing back on, the cursor is in that block. Toggle read-only mode for the current tab from **View → Read-Only Mode**, from the tab's context menu or from the command palette. A lock icon marks a read-only tab. The command has no default shortcut; you can assign one to `view.read-only-mode` in the keybinding settings.
+
+MarkText never marks a read-only tab as modified, so closing it does not ask to save; only edits made before you switched to read-only stay unsaved. When another program changes the file, MarkText reloads it without asking, so you can edit a file in another editor and read it in MarkText side by side. To open every file this way, turn on **Preferences → Editor → Open files in read-only mode**.
+
 ## File encoding
 
 MarkText tries to automatically detect the encoding and byte-order mark (BOM) of a file upon opening it. The default encoding is UTF-8 that should support all needed characters but can be changed in settings. You can disable automatic encoding detection; however, the application will then assume that all files are UTF-8 encoded. The currently used encoding can be shown and changed via command palette.

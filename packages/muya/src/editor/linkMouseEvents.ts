@@ -93,7 +93,7 @@ export function attachLinkMouseHandlers(muya: Muya): void {
         // on `!hideLinkPopup`: when the user sets `hideLinkPopup: true`, the
         // hover popover is suppressed entirely. Read it live so a runtime
         // `setOptions({ hideLinkPopup })` toggle takes effect immediately.
-        if (muya.options?.hideLinkPopup)
+        if (muya.options?.hideLinkPopup || muya.options?.readOnly)
             return;
 
         const wrapper = findLinkWrapper(event.target);
@@ -158,7 +158,11 @@ export function attachLinkMouseHandlers(muya: Muya): void {
         // their cursor-placement-only behavior. `getLinkInfo` resolves the
         // wrapper that hosts the href even when the IMG/text descendant was
         // clicked, and returns a superset (`{ href, raw, text, range }`).
-        if (!isModifierClick(event))
+        // A read-only document has no cursor to place, so a plain click follows
+        // the link too, unless it ended a drag that selected text.
+        const followsLink = isModifierClick(event)
+            || (muya.options?.readOnly && document.getSelection()?.isCollapsed !== false);
+        if (!followsLink)
             return;
 
         const wrapper = findLinkWrapper(event.target);

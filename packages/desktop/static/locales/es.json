@@ -122,6 +122,7 @@
       "sourceCodeMode": "Modo Código Fuente",
       "typewriterMode": "Modo Máquina de Escribir",
       "focusMode": "Modo Enfoque",
+      "readOnlyMode": "Modo Solo Lectura",
       "toggleTableOfContents": "Mostrar tabla de contenido",
       "reloadImages": "Recargar Imágenes",
       "showDeveloperTools": "Mostrar Herramientas de Desarrollador",
@@ -213,6 +214,7 @@
       "closeOthers": "Cerrar otros",
       "closeSavedTabs": "Cerrar pestañas guardadas",
       "closeAllTabs": "Cerrar todas las pestañas",
+      "readOnly": "Solo lectura",
       "rename": "Renombrar",
       "copyPath": "Copiar ruta",
       "showInFolder": "Mostrar en carpeta",
@@ -565,7 +567,9 @@
         "title": "Comportamiento de Escritura",
         "autoCloseBrackets": "Cerrar corchetes automáticamente",
         "autoCompleteMarkdown": "Autocompletar markdown",
-        "autoCloseQuotes": "Cerrar comillas automáticamente"
+        "autoCloseQuotes": "Cerrar comillas automáticamente",
+        "openFilesInReadOnlyMode": "Abrir archivos en modo solo lectura",
+        "openFilesInReadOnlyModeDetail": "Los archivos se abren solo para lectura. La edición de una pestaña se activa en el menú Ver o en el menú contextual de la pestaña."
       },
       "fileRepresentation": {
         "title": "Representación de Archivo",
@@ -887,6 +891,7 @@
       "sourceCodeMode": "Modo Código Fuente",
       "typewriterMode": "Modo Máquina de Escribir",
       "focusMode": "Modo Enfoque",
+      "readOnlyMode": "Modo Solo Lectura",
       "toggleSourceCodeMode": "Alternar Modo Código Fuente",
       "toggleTypewriterMode": "Alternar Modo Máquina de Escribir",
       "toggleFocusMode": "Alternar Modo Enfoque",
@@ -1034,7 +1039,8 @@
       "title": "Corrector ortográfico"
     },
     "tabs": {
-      "close": "Cerrar {name}"
+      "close": "Cerrar {name}",
+      "readOnly": "Solo lectura"
     }
   }
 }

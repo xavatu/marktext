@@ -1,6 +1,7 @@
 import type { JSONOp, JSONOpComponent, JSONOpList } from 'ot-json1';
 import type Content from '../block/base/content';
 import type Format from '../block/base/format';
+import type Parent from '../block/base/parent';
 import type { Muya } from '../muya';
 import type { IHistorySelection } from '../selection/types';
 import type { TState } from '../state/types';
@@ -235,6 +236,17 @@ function drop(root: BlockNode, descent: JSONOpList, muya: Muya): BlockNode {
     return rootContainer.root;
 }
 
+// The top-level block rendering `element`, or null outside every block.
+function outMostBlockOf(element: Element): Nullable<Parent> {
+    for (let node: Element | null = element; node; node = node.parentElement) {
+        const block = getBlock(node);
+        if (block)
+            return block.outMostBlock;
+    }
+
+    return null;
+}
+
 export class Editor {
     jsonState: JSONState;
     inlineRenderer: InlineRenderer;
@@ -245,6 +257,8 @@ export class Editor {
     scrollPage: Nullable<ScrollPage> = null;
 
     private _activeContentBlock: Nullable<Content> = null;
+
+    private _readingBlock: Nullable<Parent> = null;
 
     constructor(private _muya: Muya) {
         const state = _muya.options.json || _muya.options.markdown || '';
@@ -261,7 +275,16 @@ export class Editor {
         return this._activeContentBlock;
     }
 
+    // A read-only document has no block being edited, so a caret placed by
+    // a click or an API call never shows a block's source or active styling.
+    // Focus mode lights the caret's top-level block instead.
     set activeContentBlock(block) {
+        if (this._muya.options.readOnly) {
+            if (block)
+                this.readingBlock = block.outMostBlock;
+            block = null;
+        }
+
         const { activeContentBlock: oldActiveContentBlock } = this;
         if (block !== oldActiveContentBlock) {
             this._activeContentBlock = block;
@@ -271,6 +294,24 @@ export class Editor {
             if (block)
                 block.focusHandler();
         }
+    }
+
+    /**
+     * The top-level block focus mode keeps lit in a read-only document, where
+     * no block is active. Null while editing.
+     */
+    get readingBlock() {
+        return this._readingBlock;
+    }
+
+    set readingBlock(block) {
+        const { _readingBlock: oldReadingBlock } = this;
+        if (block === oldReadingBlock)
+            return;
+
+        this._readingBlock = block;
+        oldReadingBlock?.domNode?.classList.remove(CLASS_NAMES.MU_READING);
+        block?.domNode?.classList.add(CLASS_NAMES.MU_READING);
     }
 
     init(options: { focus?: boolean } = {}) {
@@ -298,6 +339,13 @@ export class Editor {
         const { domNode } = this._muya;
 
         const eventHandler = (event: Event) => {
+            // Every block handler below edits text or reveals its source.
+            if (this._muya.options.readOnly) {
+                if (event.type === 'click')
+                    this._handleReadOnlyClick(event);
+                return;
+            }
+
             const selectionResult = this.selection.getSelection();
             const anchorBlock = selectionResult?.anchor.block;
             const isSelectionInSameBlock = selectionResult?.isSelectionInSameBlock;
@@ -355,7 +403,28 @@ export class Editor {
         ).subscribe(eventHandler);
     }
 
+    // A read-only click still moves the caret the reader cannot see, so focus
+    // mode lights that block and editing later resumes there. A click away
+    // from the text, e.g. on an image, lights the block but leaves the caret.
+    private _handleReadOnlyClick(event: Event) {
+        const { target } = event;
+        const block = target instanceof Element ? outMostBlockOf(target) : null;
+        if (!block)
+            return;
+
+        const selection = this.selection.getSelection();
+        if (selection?.isSelectionInSameBlock && selection.anchor.block.outMostBlock === block)
+            selection.anchor.block.setCursor(selection.anchor.offset, selection.focus.offset);
+        else
+            this.readingBlock = block;
+    }
+
     focus() {
+        // A read-only root is not an editing host, so the caret placed below
+        // does not focus it. The caret is still placed for focus mode.
+        if (this._muya.options.readOnly)
+            this._muya.domNode.focus({ preventScroll: true });
+
         const { selection, scrollPage } = this;
         const { anchorBlock, anchorPath, anchor, focus } = selection;
 

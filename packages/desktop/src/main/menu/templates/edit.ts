@@ -67,6 +67,7 @@ export default function(keybindings: Keybindings): MenuItemConstructorOptions {
       },
       {
         label: t('menu.edit.pasteAsPlainText'),
+        id: 'pasteAsPlainTextEditMenuItem',
         accelerator: keybindings.getAccelerator(COMMANDS.EDIT_PASTE_AS_PLAINTEXT) ?? undefined,
         click(_menuItem, browserWindow) {
           actions.editorPasteAsPlainText(browserWindow as BrowserWindow | undefined)
@@ -87,6 +88,7 @@ export default function(keybindings: Keybindings): MenuItemConstructorOptions {
       },
       {
         label: t('menu.edit.duplicate'),
+        id: 'duplicateMenuItem',
         accelerator: keybindings.getAccelerator(COMMANDS.EDIT_DUPLICATE) ?? undefined,
         click(_menuItem, browserWindow) {
           actions.editorDuplicate(browserWindow as BrowserWindow | undefined)
@@ -94,6 +96,7 @@ export default function(keybindings: Keybindings): MenuItemConstructorOptions {
       },
       {
         label: t('menu.edit.createParagraph'),
+        id: 'createParagraphMenuItem',
         accelerator: keybindings.getAccelerator(COMMANDS.EDIT_CREATE_PARAGRAPH) ?? undefined,
         click(_menuItem, browserWindow) {
           actions.editorCreateParagraph(browserWindow as BrowserWindow | undefined)
@@ -101,6 +104,7 @@ export default function(keybindings: Keybindings): MenuItemConstructorOptions {
       },
       {
         label: t('menu.edit.deleteParagraph'),
+        id: 'deleteParagraphMenuItem',
         accelerator: keybindings.getAccelerator(COMMANDS.EDIT_DELETE_PARAGRAPH) ?? undefined,
         click(_menuItem, browserWindow) {
           actions.editorDeleteParagraph(browserWindow as BrowserWindow | undefined)
@@ -132,6 +136,7 @@ export default function(keybindings: Keybindings): MenuItemConstructorOptions {
       },
       {
         label: t('menu.edit.replace'),
+        id: 'replaceMenuItem',
         accelerator: keybindings.getAccelerator(COMMANDS.EDIT_REPLACE) ?? undefined,
         click(_menuItem, browserWindow) {
           actions.editorReplace(browserWindow as BrowserWindow | undefined)

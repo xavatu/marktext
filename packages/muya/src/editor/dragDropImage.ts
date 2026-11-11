@@ -280,10 +280,11 @@ export function attachDragDropImageHandlers(muya: Muya): void {
             event.preventDefault();
     };
 
+    // A read-only document takes no drops and leaves them to the host.
     const dragOverHandler = (event: Event) => {
         const dragEvent = event as DragEvent;
         const { dataTransfer } = dragEvent;
-        if (!dataTransfer)
+        if (!dataTransfer || muya.options.readOnly)
             return;
 
         // Only intercept a single image file or a likely web-image drag; leave
@@ -306,7 +307,7 @@ export function attachDragDropImageHandlers(muya: Muya): void {
     const dropHandler = (event: Event) => {
         const dragEvent = event as DragEvent;
         const { dataTransfer } = dragEvent;
-        if (!dataTransfer)
+        if (!dataTransfer || muya.options.readOnly)
             return;
 
         hideGhost();

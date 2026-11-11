@@ -69,6 +69,7 @@ export interface PreferencesState {
   imageRelativeDirectoryName: string
   hideLinkPopup: boolean
   autoCheck: boolean
+  openFilesInReadOnlyMode: boolean
 
   preferLooseListItem: boolean
   bulletListMarker: BulletListMarker | string
@@ -197,6 +198,7 @@ export const usePreferencesStore = defineStore('preferences', {
     imageRelativeDirectoryName: 'assets',
     hideLinkPopup: false,
     autoCheck: false,
+    openFilesInReadOnlyMode: false,
 
     preferLooseListItem: true,
     bulletListMarker: '-',

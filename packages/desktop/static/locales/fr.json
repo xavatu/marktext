@@ -122,6 +122,7 @@
       "sourceCodeMode": "Mode code source",
       "typewriterMode": "Mode machine à écrire",
       "focusMode": "Mode focus",
+      "readOnlyMode": "Mode lecture seule",
       "toggleTableOfContents": "Afficher la table des matières",
       "reloadImages": "Recharger les images",
       "showDeveloperTools": "Afficher les outils de développement",
@@ -213,6 +214,7 @@
       "closeOthers": "Fermer les autres",
       "closeSavedTabs": "Fermer les onglets sauvegardés",
       "closeAllTabs": "Fermer tous les onglets",
+      "readOnly": "Lecture seule",
       "rename": "Renommer",
       "copyPath": "Copier le chemin",
       "showInFolder": "Afficher dans le dossier",
@@ -565,7 +567,9 @@
         "title": "Comportement d'écriture",
         "autoCloseBrackets": "Fermeture automatique des crochets",
         "autoCompleteMarkdown": "Autocomplétion Markdown",
-        "autoCloseQuotes": "Fermeture automatique des guillemets"
+        "autoCloseQuotes": "Fermeture automatique des guillemets",
+        "openFilesInReadOnlyMode": "Ouvrir les fichiers en lecture seule",
+        "openFilesInReadOnlyModeDetail": "Les fichiers s'ouvrent en lecture seule. Activez l'édition d'un onglet dans le menu Affichage ou dans le menu contextuel de l'onglet."
       },
       "fileRepresentation": {
         "title": "Représentation de fichier",
@@ -887,6 +891,7 @@
       "sourceCodeMode": "Mode code source",
       "typewriterMode": "Mode machine à écrire",
       "focusMode": "Mode focus",
+      "readOnlyMode": "Mode lecture seule",
       "toggleSourceCodeMode": "Basculer le mode code source",
       "toggleTypewriterMode": "Basculer le mode machine à écrire",
       "toggleFocusMode": "Basculer le mode focus",
@@ -1034,7 +1039,8 @@
       "title": "Vérification orthographique"
     },
     "tabs": {
-      "close": "Fermer {name}"
+      "close": "Fermer {name}",
+      "readOnly": "Lecture seule"
     }
   }
 }

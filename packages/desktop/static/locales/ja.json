@@ -122,6 +122,7 @@
       "sourceCodeMode": "ソースコードモード",
       "typewriterMode": "タイプライターモード",
       "focusMode": "フォーカスモード",
+      "readOnlyMode": "読み取り専用モード",
       "toggleTableOfContents": "目次を表示",
       "reloadImages": "画像の再読み込み",
       "showDeveloperTools": "開発者ツールの表示",
@@ -213,6 +214,7 @@
       "closeOthers": "他を閉じる",
       "closeSavedTabs": "保存済みタブを閉じる",
       "closeAllTabs": "すべてのタブを閉じる",
+      "readOnly": "読み取り専用",
       "rename": "名前の変更",
       "copyPath": "パスのコピー",
       "showInFolder": "フォルダーの表示",
@@ -565,7 +567,9 @@
         "title": "書き込み動作",
         "autoCloseBrackets": "括弧を自動で閉じる",
         "autoCompleteMarkdown": "Markdown を自動補完",
-        "autoCloseQuotes": "引用符を自動で閉じる"
+        "autoCloseQuotes": "引用符を自動で閉じる",
+        "openFilesInReadOnlyMode": "ファイルを読み取り専用モードで開く",
+        "openFilesInReadOnlyModeDetail": "ファイルを読み取り専用で開きます。タブの編集は［表示］メニューまたはタブのコンテキストメニューで有効にできます。"
       },
       "fileRepresentation": {
         "title": "ファイルの表示形式",
@@ -887,6 +891,7 @@
       "sourceCodeMode": "ソースコードモード",
       "typewriterMode": "タイプライターモード",
       "focusMode": "フォーカスモード",
+      "readOnlyMode": "読み取り専用モード",
       "toggleSourceCodeMode": "ソースコードモードの切り替え",
       "toggleTypewriterMode": "タイプライターモードの切り替え",
       "toggleFocusMode": "フォーカスモードの切り替え",
@@ -1034,7 +1039,8 @@
       "title": "スペルチェック"
     },
     "tabs": {
-      "close": "{name} を閉じる"
+      "close": "{name} を閉じる",
+      "readOnly": "読み取り専用"
     }
   }
 }

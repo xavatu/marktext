@@ -75,6 +75,16 @@ export const getShowInSideBar = () => ({
   }
 })
 
+export const getReadOnly = (checked: boolean) => ({
+  label: t('contextMenu.tabs.readOnly'),
+  id: 'toggleReadOnly',
+  type: 'checkbox',
+  checked,
+  click(menuItem: TabMenuItem, _browserWindow?: unknown) {
+    contextMenu.toggleReadOnly(menuItem._tabId)
+  }
+})
+
 // Retained for backward compatibility
 export const CLOSE_THIS = getCloseThis()
 export const CLOSE_OTHERS = getCloseOthers()

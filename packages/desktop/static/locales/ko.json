@@ -122,6 +122,7 @@
       "sourceCodeMode": "소스 코드 모드",
       "typewriterMode": "타자기 모드",
       "focusMode": "집중 모드",
+      "readOnlyMode": "읽기 전용 모드",
       "toggleTableOfContents": "목차 표시",
       "reloadImages": "이미지 새로고침",
       "showDeveloperTools": "개발자 도구 보기",
@@ -213,6 +214,7 @@
       "closeOthers": "다른 탭 닫기",
       "closeSavedTabs": "저장된 탭 닫기",
       "closeAllTabs": "모든 탭 닫기",
+      "readOnly": "읽기 전용",
       "rename": "이름 바꾸기",
       "copyPath": "경로 복사",
       "showInFolder": "폴더에서 보기",
@@ -565,7 +567,9 @@
         "title": "작성 동작",
         "autoCloseBrackets": "괄호 자동 닫기",
         "autoCompleteMarkdown": "마크다운 자동 완성",
-        "autoCloseQuotes": "따옴표 자동 닫기"
+        "autoCloseQuotes": "따옴표 자동 닫기",
+        "openFilesInReadOnlyMode": "파일을 읽기 전용 모드로 열기",
+        "openFilesInReadOnlyModeDetail": "파일을 읽기 전용으로 엽니다. 탭의 편집은 보기 메뉴나 탭의 컨텍스트 메뉴에서 켤 수 있습니다."
       },
       "fileRepresentation": {
         "title": "파일 표현",
@@ -887,6 +891,7 @@
       "sourceCodeMode": "소스 코드 모드",
       "typewriterMode": "타자기 모드",
       "focusMode": "집중 모드",
+      "readOnlyMode": "읽기 전용 모드",
       "toggleSourceCodeMode": "소스 코드 모드 토글",
       "toggleTypewriterMode": "타자기 모드 토글",
       "toggleFocusMode": "집중 모드 토글",
@@ -1034,7 +1039,8 @@
       "title": "맞춤법 검사"
     },
     "tabs": {
-      "close": "{name} 닫기"
+      "close": "{name} 닫기",
+      "readOnly": "읽기 전용"
     }
   }
 }
