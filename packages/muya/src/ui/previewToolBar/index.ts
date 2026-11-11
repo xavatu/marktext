@@ -27,13 +27,6 @@ const defaultOptions = {
 
 type TPreviewBlock = HTMLBlock | MathBlock | DiagramBlock;
 
-export interface IPreviewDiagramPayload {
-    type: string;
-    code: string;
-    preview: HTMLElement;
-    label: string | null;
-}
-
 export class PreviewToolBar extends BaseFloat {
     static pluginName = 'previewTools';
     private _oldVNode: VNode | null = null;
@@ -173,16 +166,7 @@ export class PreviewToolBar extends BaseFloat {
         let cursorBlock = null;
         switch (i.type) {
             case 'view': {
-                const preview = this._previewNode();
-                const diagram = block as DiagramBlock;
-                if (preview) {
-                    this.muya.eventCenter.emit('preview-diagram', {
-                        type: diagram.meta.type,
-                        code: diagram.firstContentInDescendant()?.text ?? '',
-                        preview,
-                        label: preview.getAttribute('aria-label'),
-                    } satisfies IPreviewDiagramPayload);
-                }
+                (block as DiagramBlock).openViewer();
                 break;
             }
 

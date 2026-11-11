@@ -1,8 +1,9 @@
 import type { Muya } from '../../../muya';
 import type { IDiagramState, TState } from '../../../state/types';
+import type DiagramBlock from './index';
 import { fromEvent } from 'rxjs';
 import { CLASS_NAMES, PREVIEW_DOMPURIFY_CONFIG } from '../../../config';
-import { sanitize } from '../../../utils';
+import { isMouseEvent, sanitize } from '../../../utils';
 import { finalizeRenderedDiagram, renderDiagram } from '../../../utils/diagram/render';
 import logger from '../../../utils/logger';
 import Parent from '../../base/parent';
@@ -51,15 +52,28 @@ class DiagramPreview extends Parent {
         clickObservable.subscribe(this.clickHandler.bind(this));
     }
 
+    // A diagram opens in the host's viewer the way an image does: on a plain
+    // click while reading, on a Ctrl/⌘-click while editing. A plain click
+    // while editing reveals the diagram's code.
     clickHandler(event: Event) {
         event.preventDefault();
         event.stopPropagation();
 
-        if (this.parent == null)
+        const diagram = this.parent as DiagramBlock | null;
+        if (diagram == null)
             return;
 
-        const cursorBlock = this.parent.firstContentInDescendant();
-        cursorBlock?.setCursor(0, 0);
+        const { readOnly } = this.muya.options;
+        const modified = isMouseEvent(event) && (event.ctrlKey || event.metaKey);
+        // Placing the caret would open the code under the viewer.
+        if (modified && !readOnly && diagram.openViewer())
+            return;
+
+        // While reading, the caret stays hidden and only marks the block for
+        // focus mode.
+        diagram.firstContentInDescendant()?.setCursor(0, 0);
+        if (readOnly)
+            diagram.openViewer();
     }
 
     async update(code = this._code) {

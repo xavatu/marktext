@@ -1184,3 +1184,9 @@ pre.mu-active.mu-fenced-code::after {
 .mu-read-only .mu-task-list-checkbox {
     cursor: default;
 }
+
+/* A click opens a rendered diagram in the host's viewer
+   (`DiagramPreview#clickHandler`). */
+.mu-read-only figure.mu-diagram-block .mu-diagram-preview[role='img'] {
+    cursor: zoom-in;
+}

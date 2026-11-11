@@ -8,6 +8,15 @@ import { ScrollPage } from '../../scrollPage';
 
 const debug = logger('diagram:');
 
+/** The `preview-diagram` event payload a host opens its diagram viewer from. */
+export interface IPreviewDiagramPayload {
+    type: string;
+    code: string;
+    /** The rendered preview; the viewer clones it rather than re-rendering. */
+    preview: HTMLElement;
+    label: string | null;
+}
+
 class DiagramBlock extends Parent {
     public meta: IDiagramMeta;
     static override blockName = 'diagram';
@@ -61,6 +70,27 @@ class DiagramBlock extends Parent {
         this.meta = meta;
         this.classList = ['mu-diagram-block'];
         this.createDomNode();
+    }
+
+    /**
+     * Emit `preview-diagram` so the host shows this diagram in its viewer.
+     *
+     * @returns False, without emitting, while there is no rendered diagram to
+     * show: the code is empty or invalid, or the render has not landed yet.
+     */
+    openViewer(): boolean {
+        const preview = this.attachments.head?.domNode as HTMLElement | undefined;
+        if (!preview?.querySelector('svg, img'))
+            return false;
+
+        this.muya.eventCenter.emit('preview-diagram', {
+            type: this.meta.type,
+            code: this.firstContentInDescendant()?.text ?? '',
+            preview,
+            label: preview.getAttribute('aria-label'),
+        } satisfies IPreviewDiagramPayload);
+
+        return true;
     }
 
     queryBlock(path: TBlockPath) {

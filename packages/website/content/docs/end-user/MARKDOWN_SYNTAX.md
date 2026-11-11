@@ -829,7 +829,9 @@ alone.
 MarkText support class, flow chart, gantt and sequence diagrams powered by flowchart.js, mermaid and Vega-Lite. [Code](#code) blocks with special language identifiers are used for diagrams.
 
 Hover a rendered diagram to get its toolbar. The magnifier opens the diagram
-full-screen, scaled to fit the window so a large one arrives readable. From
+full-screen, scaled to fit the window so a large one arrives readable.
+`Ctrl`-click (`⌘`-click on macOS) on the diagram opens it the same way, and in
+read-only mode a plain click does. From
 there you can zoom with the scroll wheel, the `+` / `-` keys or the toolbar
 buttons, drag (or use the arrow keys) to pan, fit it back to the window with
 `0`, and return to its original size with `1`. `Tab` moves between the
