@@ -10,9 +10,10 @@ test.use({ launchOptions: { ignoreDefaultArgs: ['--hide-scrollbars'] } });
  * Table cells wrap between words and never split one. `overflow-wrap:
  * anywhere` on the cells (#5606) let the table squeeze a column below its
  * longest word, so headers and values broke mid-word ("Парам|етр"). A column
- * is now at least as wide as its longest word, and a table that outgrows the
- * text column scrolls sideways inside its figure. Only a token longer than
- * the whole column, such as a long URL, still breaks.
+ * is now at least as wide as its longest word, and a table too wide for the
+ * room it has scrolls sideways inside its figure (how much room a table has
+ * is in `table-breakout.spec.ts`). Only a token longer than the whole column,
+ * such as a long URL, still breaks.
  */
 
 const COMPETING_COLUMNS = [

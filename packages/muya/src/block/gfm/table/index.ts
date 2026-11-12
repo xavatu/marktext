@@ -100,7 +100,7 @@ class Table extends Parent {
             if (event.target !== domNode)
                 return;
 
-            // A table wider than the text column scrolls, and pressing its
+            // A table too wide for its figure scrolls, and pressing the
             // scrollbar targets the figure too.
             if (isMouseEvent(event) && event.offsetY >= domNode!.clientHeight)
                 return;

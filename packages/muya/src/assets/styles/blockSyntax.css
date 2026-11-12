@@ -8,6 +8,20 @@
     outline: none;
 }
 
+/* The editor's inline size is what a table may break out into (`.mu-table`).
+   Container units on `.mu-container` measure this box; the registered type
+   resolves them to pixels there, so descendants inherit the editor's width
+   rather than re-resolving `100cqw` against the text column. */
+.mu-editor {
+    container-type: inline-size;
+}
+
+@property --mu-editor-inline-size {
+    inherits: true;
+    initial-value: 0;
+    syntax: '<length>';
+}
+
 /* Hide the native spelling squiggle while keeping `spellcheck="true"`, so the
    native checker and its right-click suggestions stay active. Toggled by the
    `spellcheckHideMarks` option. */
@@ -36,6 +50,8 @@
        Naming it a query container lets content that must not outgrow the
        column — the inline-math popup — measure it in `cqw`. */
     container-type: inline-size;
+
+    --mu-editor-inline-size: 100cqw;
 }
 
 .mu-container p,
@@ -637,15 +653,39 @@ li.mu-task-list-item > span.mu-checkbox-checked::before {
 
 /* table */
 
-/* A column is at least as wide as its longest word, so a table that outgrows
-   the text column scrolls sideways instead of splitting words. The 1px
-   inline-end padding takes in the last column's border, which the cell
-   `::before` below draws 1px past the table; without it a table exactly as
-   wide as the column would show a scrollbar. */
+/* A column is at least as wide as its longest word, so a table can outgrow the
+   text column. Up to half a column more, it spills into the margins on both
+   sides, centered on the column; past that its figure scrolls sideways
+   instead of splitting words. A table that fits keeps to the column, as wide
+   as the column so the centering leaves it in place.
+
+   The breakout keeps clear of the gutters that hold the block handle: it is
+   no wider than the editor less `.mu-container`'s side paddings (74px + 50px),
+   so centered on the column it at most fills the space between them. Chromium
+   counts a scrolling editor's scrollbar into `100cqw`, so a narrow window
+   lets the table into each gutter by half the scrollbar's width.
+
+   The 1px inline-end padding takes in the last column's border, which the
+   cell `::before` below draws 1px past the table; without it a table exactly
+   as wide as the figure would show a scrollbar. */
 .mu-table {
+    position: relative;
+
+    box-sizing: border-box;
+    width: fit-content;
+    min-width: 100%;
+    max-width: min(150%, var(--mu-editor-inline-size) - 124px);
     margin: 0.5em 0 0;
     padding: 0.5em 1px 0.5em 0;
     overflow-x: auto;
+    inset-inline-start: 50%;
+    translate: -50%;
+}
+
+/* Right to left, a block wider than the column overhangs its left edge
+   rather than its right one, so centering moves it the other way. */
+.mu-table:dir(rtl) {
+    translate: 50%;
 }
 
 .mu-table::-webkit-scrollbar {

@@ -580,6 +580,14 @@ Renders to:
 | engine |    engine to be used for processing templates. Handlebars is the default. |
 |    ext |                                      extension to be used for dest files. |
 
+### Wide tables
+
+A cell wraps its text between words and never splits a word, so a table with
+many columns can be wider than the text. Such a table extends into the margins
+on both sides, up to one and a half times the width of the text, and scrolls
+sideways only past that. In a narrow window it has less room and scrolls
+sooner.
+
 <br>
 
 ## Code
