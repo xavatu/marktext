@@ -1,4 +1,5 @@
 export type { IPreviewDiagramPayload } from './block/extra/diagram';
+export type { IPreviewTablePayload } from './block/gfm/table';
 export type { ISerializedHistory } from './history';
 export type { ILocale } from './i18n/types';
 

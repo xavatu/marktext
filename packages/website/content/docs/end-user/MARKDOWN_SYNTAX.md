@@ -588,6 +588,10 @@ on both sides, up to one and a half times the width of the text, and scrolls
 sideways only past that. In a narrow window it has less room and scrolls
 sooner.
 
+`Ctrl`-click (`⌘`-click on macOS) on a table opens it full-screen, the way an
+image or a [diagram](#diagrams) opens; in read-only mode a plain click does.
+There you can zoom and pan to see the whole table at once.
+
 <br>
 
 ## Code

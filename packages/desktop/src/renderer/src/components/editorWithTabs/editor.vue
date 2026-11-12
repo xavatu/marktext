@@ -111,6 +111,7 @@ import {
   wordCount as muyaWordCount,
   type IHistorySelection,
   type IPreviewDiagramPayload,
+  type IPreviewTablePayload,
   type IMuyaOptions,
   type IReplaceOption,
   type ISearchOption,
@@ -2052,6 +2053,10 @@ onMounted(() => {
       },
       payload.label
     )
+  })
+
+  editor.value.on('preview-table', ({ preview }: IPreviewTablePayload) => {
+    mediaViewer.value?.openTable(preview)
   })
 
   editor.value.on('selection-change', (changes: MuyaChange) => {

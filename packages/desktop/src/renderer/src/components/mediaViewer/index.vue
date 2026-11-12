@@ -427,16 +427,20 @@ const openImage = (url: string) =>
     return img
   }, t('editor.mediaViewer.title'))
 
+// Diagrams and tables are drawn in the editor's colors, which assume the
+// editor's background: on the overlay's dark scrim dark strokes and text would
+// vanish.
+const editorCanvas = (): HTMLElement => {
+  const figure = document.createElement('figure')
+  figure.style.cssText = 'margin:0;padding:16px;border-radius:4px;background:var(--editorBgColor);'
+  return figure
+}
+
 const openDiagram = (source: DiagramSource, name: string | null) =>
   open(
     (stage) => {
-      const figure = document.createElement('figure')
+      const figure = editorCanvas()
       figure.className = 'mu-diagram-block'
-      // Diagram renderers draw dark strokes on an assumed light canvas, so on
-      // the overlay's dark scrim the edges would vanish. Give them the
-      // editor's own background, which is what they were drawn against.
-      figure.style.cssText =
-        'margin:0;padding:16px;border-radius:4px;background:var(--editorBgColor);'
 
       const preview = source.preview.cloneNode(true) as HTMLElement
       // The dialog already carries this name; announcing it twice helps nobody.
@@ -467,6 +471,15 @@ const openDiagram = (source: DiagramSource, name: string | null) =>
     source
   )
 
+// `preview` is muya's static copy of the table, already sized and styled.
+const openTable = (preview: HTMLElement) =>
+  open((stage) => {
+    const figure = editorCanvas()
+    figure.appendChild(preview)
+    stage.appendChild(figure)
+    return figure
+  }, t('editor.mediaViewer.title'))
+
 const close = () => {
   if (!visible.value) return
 
@@ -482,7 +495,7 @@ const close = () => {
 // the parent's `viewer-open` latch set.
 onBeforeUnmount(close)
 
-defineExpose({ openImage, openDiagram, close })
+defineExpose({ openImage, openDiagram, openTable, close })
 </script>
 
 <style>

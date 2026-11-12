@@ -1,4 +1,7 @@
-.mu-editor {
+/* A table preview (`Table#openViewer`) leaves the editor for the host's viewer
+   and takes the editor's type with it. */
+.mu-editor,
+.mu-table-preview {
     font-size: var(--mu-font-size, 16px);
     font-family:
         var(--mu-font-family, 'Open Sans', 'Clear Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif), 'Noto Music',
@@ -20,6 +23,10 @@
     inherits: true;
     initial-value: 0;
     syntax: '<length>';
+}
+
+.mu-table-preview {
+    color: var(--editor-color);
 }
 
 /* Hide the native spelling squiggle while keeping `spellcheck="true"`, so the
@@ -1228,5 +1235,10 @@ pre.mu-active.mu-fenced-code::after {
 /* A click opens a rendered diagram in the host's viewer
    (`DiagramPreview#clickHandler`). */
 .mu-read-only figure.mu-diagram-block .mu-diagram-preview[role='img'] {
+    cursor: zoom-in;
+}
+
+/* So does a table (`Table#_clickHandler`). */
+.mu-read-only .mu-table-inner {
     cursor: zoom-in;
 }

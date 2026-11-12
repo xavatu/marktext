@@ -9,6 +9,8 @@ import type TableRow from './row';
 import type TableInner from './table';
 import diff from 'fast-diff';
 import { fromEvent } from 'rxjs';
+import { CLASS_NAMES } from '../../../config';
+import { LINK_SELECTOR } from '../../../editor/linkMouseEvents';
 import { diffToTextOp, isMouseEvent } from '../../../utils';
 import logger from '../../../utils/logger';
 import { LinkedList } from '../../base/linkedList/linkedList';
@@ -16,6 +18,30 @@ import Parent from '../../base/parent';
 import { ScrollPage } from '../../scrollPage';
 
 const debug = logger('table:');
+
+/** The `preview-table` event payload a host opens its table viewer from. */
+export interface IPreviewTablePayload {
+    /**
+     * A static copy of the table, outside the document. Its cells read as they
+     * do without a caret, nothing in it is editable, and it keeps the table's
+     * width and the editor's type, so the host can show it as is.
+     */
+    preview: HTMLElement;
+}
+
+// What a click acts on by itself inside a cell: a link is followed, an image
+// opens in its own viewer.
+const OWN_CLICK_TARGETS = `a, ${LINK_SELECTOR}, .${CLASS_NAMES.MU_INLINE_IMAGE}`;
+
+// The caret and a cell selection mark the live table; a preview shows neither.
+const EDITING_CLASSES = [
+    CLASS_NAMES.MU_ACTIVE,
+    CLASS_NAMES.MU_TABLE_CELL_SELECTED,
+    CLASS_NAMES.MU_TABLE_CELL_BORDER_TOP,
+    CLASS_NAMES.MU_TABLE_CELL_BORDER_RIGHT,
+    CLASS_NAMES.MU_TABLE_CELL_BORDER_BOTTOM,
+    CLASS_NAMES.MU_TABLE_CELL_BORDER_LEFT,
+];
 
 class Table extends Parent {
     override children: LinkedList<TableInner> = new LinkedList();
@@ -113,6 +139,73 @@ class Table extends Parent {
 
         const mousedownObservable = fromEvent(domNode!, 'mousedown');
         mousedownObservable.subscribe(mousedownHandler);
+
+        fromEvent(domNode!, 'click').subscribe(this._clickHandler.bind(this));
+    }
+
+    // A table opens in the host's viewer the way an image does: on a plain
+    // click while reading, on a Ctrl/⌘-click while editing. A click on a link
+    // or an image in a cell, or one that ends a text selection, keeps its
+    // usual meaning, and so does one on the scrollbar.
+    private _clickHandler(event: Event) {
+        const { target } = event;
+        if (!isMouseEvent(event) || !(target instanceof Element))
+            return;
+
+        const opens = this.muya.options.readOnly || event.ctrlKey || event.metaKey;
+        if (
+            !opens
+            || !this.firstChild?.domNode?.contains(target)
+            || target.closest(OWN_CLICK_TARGETS)
+            || document.getSelection()?.isCollapsed === false
+        ) {
+            return;
+        }
+
+        this.openViewer();
+    }
+
+    /** Emit `preview-table` so the host shows a static copy of this table. */
+    openViewer() {
+        const inner = this.firstChild as TableInner;
+        const live = inner.domNode as HTMLTableElement;
+        const table = live.cloneNode(true) as HTMLTableElement;
+
+        // The caret reveals the markdown around it, and search marks its
+        // matches; render every cell afresh without either.
+        const { inlineRenderer } = this.muya.editor;
+        inner.forEach((row, rowOffset) => {
+            (row as TableRow).forEach((cell, columnOffset) => {
+                const content = table.rows[rowOffset]?.cells[columnOffset]?.firstElementChild;
+                if (content)
+                    content.innerHTML = inlineRenderer.renderPreview((cell as TableBodyCell).firstChild as TableCellContent);
+            });
+        });
+
+        for (const element of [table, ...table.querySelectorAll('*')]) {
+            // Ids would repeat the live table's.
+            element.removeAttribute('id');
+            element.removeAttribute('contenteditable');
+            element.classList.remove(...EDITING_CLASSES);
+        }
+
+        // At its width in the document the table wraps its cells the same
+        // way. Rounding down could wrap one more line.
+        table.style.width = `${Math.ceil(live.getBoundingClientRect().width)}px`;
+
+        const preview = document.createElement('div');
+        preview.className = 'mu-table-preview';
+        preview.dir = getComputedStyle(live).direction;
+        // The editor's font options are `--mu-*` properties on its root
+        // (`applyAppearance`).
+        const { style } = this.muya.domNode;
+        for (const name of Array.from(style)) {
+            if (name.startsWith('--mu-'))
+                preview.style.setProperty(name, style.getPropertyValue(name));
+        }
+        preview.appendChild(table);
+
+        this.muya.eventCenter.emit('preview-table', { preview } satisfies IPreviewTablePayload);
     }
 
     queryBlock(path: TBlockPath) {

@@ -75,6 +75,14 @@ class InlineRenderer {
         domNode!.innerHTML = html;
     }
 
+    /**
+     * Render a block's inline HTML as it reads with no caret in it: every
+     * marker hidden and no search highlight. The block's DOM is left as is.
+     */
+    renderPreview(block: Format): string {
+        return this.renderer.output(this._tokenizer(block, []), block, {});
+    }
+
     // Reference definitions (`[ref]: url`) live in their own paragraphs, so
     // resolving `[text][ref]` needs a document-wide pass. Shared with
     // `getTOC`, which tokenizes headings outside a rendered block.
